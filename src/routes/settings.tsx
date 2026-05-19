@@ -30,6 +30,7 @@ function ErrorFallback({ error }: { error: Error }) {
 }
 
 function SettingsPageWrapper() {
+  console.log("SettingsPageWrapper rendering");
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <SettingsPage />
