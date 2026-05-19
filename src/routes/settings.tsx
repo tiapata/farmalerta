@@ -6,7 +6,9 @@ import {
   Settings as SettingsIcon,
   Bell,
   Users,
-  ShieldCheck
+  ShieldCheck,
+  Save,
+  Trash2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,7 +84,9 @@ function SettingsPage() {
                   <Input id="whatsapp" defaultValue="(11) 98877-6655" className="rounded-xl border-none bg-muted/30" />
                 </div>
               </div>
-              <Button className="rounded-xl shadow-lg shadow-primary/20 px-8">Salvar Alterações</Button>
+              <Button className="rounded-xl shadow-lg shadow-primary/20 px-8 gap-2">
+                <Save className="h-4 w-4" /> Salvar Alterações
+              </Button>
             </CardContent>
           </Card>
 
@@ -92,7 +96,9 @@ function SettingsPage() {
               <CardDescription>Ações irreversíveis na sua conta</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <Button variant="destructive" className="rounded-xl">Excluir todos os dados</Button>
+              <Button variant="destructive" className="rounded-xl gap-2">
+                <Trash2 className="h-4 w-4" /> Excluir todos os dados
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
