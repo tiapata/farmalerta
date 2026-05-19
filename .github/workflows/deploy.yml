@@ -32,8 +32,8 @@ jobs:
       - name: Build
         run: bun run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: "https://hqoybksxdudrpeuryoln.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhxb3lia3N4ZHVkcnBldXJ5b2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMTcwNTcsImV4cCI6MjA5NDU5MzA1N30.GyNSjQhz0415hM7TPRyv0GnnD46vsQwt6AvoU-5AdVM"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
