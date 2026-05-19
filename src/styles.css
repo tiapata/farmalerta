@@ -42,7 +42,7 @@
   --card-foreground: oklch(0.15 0.02 240);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.02 240);
-  --primary: oklch(0.55 0.18 250); /* Sky/Blue Premium */
+  --primary: oklch(0.62 0.17 145); /* Emerald/Green Premium */
   --primary-foreground: oklch(0.99 0.005 240);
   --secondary: oklch(0.96 0.01 240);
   --secondary-foreground: oklch(0.15 0.02 240);
@@ -54,7 +54,7 @@
   --destructive-foreground: oklch(0.99 0.005 240);
   --border: oklch(0.92 0.01 240);
   --input: oklch(0.92 0.01 240);
-  --ring: oklch(0.55 0.18 250);
+  --ring: oklch(0.62 0.17 145);
 }
 
 @layer base {

@@ -100,7 +100,7 @@ function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5 text-blue-500" /> Importação de Dados ERP
+                <Database className="h-5 w-5 text-green-500" /> Importação de Dados ERP
               </CardTitle>
               <CardDescription>Configure como o sistema recebe dados do seu ERP</CardDescription>
             </CardHeader>

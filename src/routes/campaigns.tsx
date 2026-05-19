@@ -119,7 +119,7 @@ function Campaigns() {
                 <Badge variant="secondary" className="bg-red-100 text-red-700">Hipertensos</Badge>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2">
-                <Badge variant="secondary" className="bg-blue-100 text-blue-700">Diabéticos</Badge>
+                <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">Diabéticos</Badge>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2">
                 <Badge variant="secondary" className="bg-purple-100 text-purple-700">Idosos</Badge>

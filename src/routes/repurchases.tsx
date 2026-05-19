@@ -76,7 +76,7 @@ function Repurchases() {
                 <div className="flex flex-1 items-center gap-4">
                   <div className={cn(
                     "flex h-12 w-12 items-center justify-center rounded-full",
-                    p.priority === "Alta" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                    p.priority === "Alta" ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"
                   )}>
                     <Calendar className="h-6 w-6" />
                   </div>
