@@ -27,24 +27,33 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: npx vite build --ssr false
         env:
           VITE_BASE_PATH: /farmalerta/
 
+      - name: Debug Build Output
+        run: |
+          ls -R dist/
+
       - name: Fix for SPA (404.html)
         run: |
-          # TanStack Start standard output for client is dist/client
-          if [ -f "dist/client/index.html" ]; then
-            cp dist/client/index.html dist/client/404.html
+          # If dist/client exists (standard TanStack Start), use it.
+          # If not, use dist/ root.
+          if [ -d "dist/client" ]; then
+            TARGET_DIR="dist/client"
           else
-            echo "Warning: index.html not found in dist/client. Build might not be generating static files correctly for GitHub Pages."
-            ls -R dist/
+            TARGET_DIR="dist"
           fi
+          
+          if [ -f "$TARGET_DIR/index.html" ]; then
+            cp "$TARGET_DIR/index.html" "$TARGET_DIR/404.html"
+          fi
+          echo "DEPLOY_PATH=$TARGET_DIR" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist/client'
+          path: ${{ env.DEPLOY_PATH }}
 
   deploy:
     needs: build_site
