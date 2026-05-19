@@ -14,9 +14,6 @@ export default defineConfig({
     appDirectory: "src",
   },
   vite: {
-    base: "./",
-    build: {
-      outDir: "dist",
-    },
+    base: "/FarmAlerta/",
   },
 });
