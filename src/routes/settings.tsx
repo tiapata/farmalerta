@@ -1,80 +1,116 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { 
-  Settings as SettingsIcon,
-  Save,
-  Trash2
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Settings as SettingsIcon, Bell, Shield, Users, Save } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
+  const [activeTab, setActiveTab] = useState("farmacia");
+
+  const tabs = [
+    { id: "farmacia", label: "Farmácia", icon: SettingsIcon },
+    { id: "notificacoes", label: "Notificações", icon: Bell },
+    { id: "usuarios", label: "Usuários", icon: Users },
+    { id: "seguranca", label: "Segurança", icon: Shield },
+  ];
+
   return (
-    <div className="flex flex-col gap-8 pb-10">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <SettingsIcon className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold text-primary uppercase tracking-wider">Configurações do Sistema</span>
+    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+      <header className="space-y-2">
+        <div className="flex items-center gap-2 text-primary">
+          <SettingsIcon className="h-5 w-5" />
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Configurações</h1>
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight">Configurações</h1>
-        <p className="text-muted-foreground text-lg">Gerencie sua conta e preferências do sistema</p>
+        <p className="text-muted-foreground">Gerencie as preferências da sua farmácia e do sistema.</p>
       </header>
 
-      <div className="space-y-6">
-        <div className="flex flex-wrap gap-2 bg-muted/50 p-1 rounded-xl w-fit">
-          <Button variant="ghost" className="rounded-lg bg-background shadow-sm">Farmácia</Button>
-          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed" disabled>Integrações</Button>
-          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed" disabled>Notificações</Button>
-          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed" disabled>Usuários</Button>
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Navigation Sidebar */}
+        <div className="w-full md:w-64 flex flex-col gap-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <div className="space-y-6">
-          <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="border-b bg-muted/20">
-              <CardTitle>Dados da Farmácia</CardTitle>
-              <CardDescription>Informações principais da sua unidade</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold">Nome da Farmácia</Label>
-                  <Input id="name" defaultValue="Farmácia São João - Filial Centro" className="rounded-xl border-none bg-muted/30" />
+        {/* Content Area */}
+        <div className="flex-1 bg-card rounded-2xl border p-6 shadow-sm">
+          {activeTab === "farmacia" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold">Dados da Farmácia</h2>
+                <p className="text-sm text-muted-foreground">Informações públicas e de contato da unidade.</p>
+              </div>
+              
+              <div className="grid gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Nome da Farmácia</label>
+                  <input 
+                    type="text" 
+                    defaultValue="Farmácia São João - Filial Centro"
+                    className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cnpj" className="text-sm font-semibold">CNPJ</Label>
-                  <Input id="cnpj" defaultValue="12.345.678/0001-90" className="rounded-xl border-none bg-muted/30" />
+                
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">CNPJ</label>
+                  <input 
+                    type="text" 
+                    defaultValue="12.345.678/0001-90"
+                    className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-sm font-semibold">Telefone Comercial</Label>
-                  <Input id="phone" defaultValue="(11) 3344-5566" className="rounded-xl border-none bg-muted/30" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp" className="text-sm font-semibold">WhatsApp Business</Label>
-                  <Input id="whatsapp" defaultValue="(11) 98877-6655" className="rounded-xl border-none bg-muted/30" />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium">Telefone</label>
+                    <input 
+                      type="text" 
+                      defaultValue="(11) 3344-5566"
+                      className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium">WhatsApp</label>
+                    <input 
+                      type="text" 
+                      defaultValue="(11) 98877-6655"
+                      className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                    />
+                  </div>
                 </div>
               </div>
-              <Button className="rounded-xl shadow-lg shadow-primary/20 px-8 gap-2">
-                <Save className="h-4 w-4" /> Salvar Alterações
-              </Button>
-            </CardContent>
-          </Card>
 
-          <Card className="border-none shadow-sm bg-destructive/5 overflow-hidden">
-            <CardHeader className="border-b border-destructive/10">
-              <CardTitle className="text-destructive">Zona de Perigo</CardTitle>
-              <CardDescription>Ações irreversíveis na sua conta</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <Button variant="destructive" className="rounded-xl gap-2">
-                <Trash2 className="h-4 w-4" /> Excluir todos os dados
-              </Button>
-            </CardContent>
-          </Card>
+              <div className="pt-4">
+                <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-opacity">
+                  <Save className="h-4 w-4" />
+                  Salvar Alterações
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab !== "farmacia" && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="bg-muted rounded-full p-4 mb-4">
+                <SettingsIcon className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-medium">Em desenvolvimento</h3>
+              <p className="text-sm text-muted-foreground max-w-xs">Esta seção de configurações estará disponível em breve.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
