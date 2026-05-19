@@ -28,7 +28,7 @@ function Repurchases() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-6 md:p-10 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6  animate-in fade-in duration-500">
       <header>
         <h1 className="text-3xl font-bold tracking-tight">Previsão de Recompra</h1>
         <p className="text-muted-foreground">Antecipe as necessidades dos seus clientes de uso contínuo</p>

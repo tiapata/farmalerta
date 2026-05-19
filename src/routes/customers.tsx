@@ -48,7 +48,7 @@ function Customers() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6 md:p-10 animate-in slide-in-from-bottom-2 duration-500">
+    <div className="flex flex-col gap-6 animate-in slide-in-from-bottom-2 duration-500">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Gestão de Clientes</h1>

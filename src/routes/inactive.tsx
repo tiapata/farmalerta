@@ -58,7 +58,7 @@ function InactiveCustomers() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-6 md:p-10 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6  animate-in fade-in duration-500">
       <header>
         <h1 className="text-3xl font-bold tracking-tight">Recuperação de Inativos</h1>
         <p className="text-muted-foreground">Identifique e traga de volta clientes que pararam de comprar</p>

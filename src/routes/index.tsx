@@ -34,7 +34,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="flex flex-col gap-8 p-6 md:p-10 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6 md:gap-8 animate-in fade-in duration-500">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">FarmAlerta</h1>

@@ -25,7 +25,7 @@ function Campaigns() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-6 md:p-10 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6  animate-in fade-in duration-500">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Campanhas Inteligentes</h1>
