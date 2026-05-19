@@ -1,10 +1,9 @@
 import { createRoot } from "react-dom/client";
-import { StartClient } from "@tanstack/react-start";
-import { startInstance } from "./start";
+import { StartClient } from "@tanstack/react-start/client";
 import "./styles.css";
 
 const rootElement = document.getElementById("root");
-if (rootElement && !rootElement.innerHTML) {
+if (rootElement) {
   const root = createRoot(rootElement);
-  root.render(<StartClient start={startInstance} />);
+  root.render(<StartClient />);
 }
