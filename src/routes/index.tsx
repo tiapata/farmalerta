@@ -22,7 +22,7 @@ function Dashboard() {
   const stats = [
     { title: "Receita Recuperável", value: "R$ 12.450", description: "Potencial de inativos", icon: TrendingUp, color: "text-green-600" },
     { title: "Clientes em Risco", value: "24", description: "30+ dias sem compra", icon: UserMinus, color: "text-orange-600" },
-    { title: "Recompras Previstas", value: "18", description: "Para os próximos 3 dias", icon: Calendar, color: "text-blue-600" },
+    { title: "Recompras Previstas", value: "18", description: "Para os próximos 3 dias", icon: Calendar, color: "text-green-600" },
     { title: "Clientes VIP", value: "42", description: "Clientes recorrentes", icon: Star, color: "text-yellow-600" },
   ];
 
@@ -37,7 +37,7 @@ function Dashboard() {
     <div className="flex flex-col gap-8 p-6 md:p-10 animate-in fade-in duration-500">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">FarmaPulse</h1>
+          <h1 className="text-3xl font-bold tracking-tight">FarmAlerta</h1>
           <p className="text-muted-foreground">Bem-vindo de volta, Farmácia São João</p>
         </div>
         <div className="flex items-center gap-4">
