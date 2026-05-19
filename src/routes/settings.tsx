@@ -16,20 +16,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPageWrapper,
 });
 
-function ErrorFallback({ error }: FallbackProps) {
-  return (
-    <div className="p-4 border border-destructive bg-destructive/10 rounded-xl">
-      <h2 className="text-lg font-bold text-destructive">Erro na página de configurações</h2>
-      <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
-    </div>
-  );
-}
 
 function SettingsPageWrapper() {
   return <SettingsPage />;
