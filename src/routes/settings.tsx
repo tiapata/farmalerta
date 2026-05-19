@@ -30,7 +30,6 @@ function ErrorFallback({ error }: FallbackProps) {
 }
 
 function SettingsPageWrapper() {
-  console.log("SettingsPageWrapper rendering");
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <SettingsPage />
@@ -39,9 +38,8 @@ function SettingsPageWrapper() {
 }
 
 function SettingsPage() {
-  console.log("SettingsPage rendering");
   return (
-    <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
+    <div className="flex flex-col gap-8">
       <header className="space-y-1">
         <div className="flex items-center gap-2">
           <SettingsIcon className="h-4 w-4 text-primary" />
@@ -53,15 +51,15 @@ function SettingsPage() {
 
       <Tabs defaultValue="pharmacy" className="space-y-6">
         <div className="overflow-x-auto pb-2">
-          <TabsList className="bg-muted/50 p-1 inline-flex w-auto justify-start h-auto min-w-full md:min-w-0">
-            <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 whitespace-nowrap">Farmácia</TabsTrigger>
-            <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 whitespace-nowrap">Integrações</TabsTrigger>
-            <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 whitespace-nowrap">Notificações</TabsTrigger>
-            <TabsTrigger value="users" className="rounded-lg py-2 px-4 whitespace-nowrap">Usuários</TabsTrigger>
+          <TabsList className="bg-muted/50 p-1 flex w-full md:w-max justify-start h-auto">
+            <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Farmácia</TabsTrigger>
+            <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Integrações</TabsTrigger>
+            <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Notificações</TabsTrigger>
+            <TabsTrigger value="users" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Usuários</TabsTrigger>
           </TabsList>
         </div>
 
-        <TabsContent value="pharmacy" className="space-y-6 animate-in fade-in duration-500">
+        <TabsContent value="pharmacy" className="space-y-6 outline-none">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle>Dados da Farmácia</CardTitle>
@@ -101,7 +99,7 @@ function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="integrations" className="space-y-6 animate-in fade-in duration-500">
+        <TabsContent value="integrations" className="space-y-6 outline-none">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2">
@@ -157,7 +155,7 @@ function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="notifications" className="space-y-6 animate-in fade-in duration-500">
+        <TabsContent value="notifications" className="space-y-6 outline-none">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2">
@@ -194,7 +192,7 @@ function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-6 animate-in fade-in duration-500">
+        <TabsContent value="users" className="space-y-6 outline-none">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2">
