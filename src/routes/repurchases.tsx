@@ -7,13 +7,17 @@ import {
   TrendingUp,
   AlertCircle,
   ChevronRight,
-  ArrowUpRight
+  ArrowUpRight,
+  Stethoscope,
+  Pill,
+  Timer
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const Route = createFileRoute("/repurchases")({
   component: Repurchases,
@@ -21,89 +25,108 @@ export const Route = createFileRoute("/repurchases")({
 
 function Repurchases() {
   const predictions = [
-    { id: 1, customer: "Maria Oliveira", medication: "Losartana 50mg", daysLeft: 2, progress: 90, date: "20/05/2026", priority: "Alta" },
-    { id: 2, customer: "Antônio Ferreira", medication: "Metformina 850mg", daysLeft: 5, progress: 80, date: "23/05/2026", priority: "Média" },
-    { id: 3, customer: "Lúcia Souza", medication: "Sinvastatina 20mg", daysLeft: 1, progress: 95, date: "19/05/2026", priority: "Alta" },
-    { id: 4, customer: "Ricardo Lima", medication: "Atenolol 25mg", daysLeft: 12, progress: 60, date: "30/05/2026", priority: "Baixa" },
+    { id: 1, customer: "Maria Oliveira", medication: "Losartana 50mg", daysLeft: 2, progress: 90, date: "20/05/2026", priority: "Alta", initials: "MO" },
+    { id: 2, customer: "Antônio Ferreira", medication: "Metformina 850mg", daysLeft: 5, progress: 80, date: "23/05/2026", priority: "Média", initials: "AF" },
+    { id: 3, customer: "Lúcia Souza", medication: "Sinvastatina 20mg", daysLeft: 1, progress: 95, date: "19/05/2026", priority: "Alta", initials: "LS" },
+    { id: 4, customer: "Ricardo Lima", medication: "Atenolol 25mg", daysLeft: 12, progress: 60, date: "30/05/2026", priority: "Baixa", initials: "RL" },
   ];
 
   return (
-    <div className="flex flex-col gap-6  animate-in fade-in duration-500">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Previsão de Recompra</h1>
-        <p className="text-muted-foreground">Antecipe as necessidades dos seus clientes de uso contínuo</p>
+    <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
+      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-primary">
+            <Calendar className="h-4 w-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Ciclo de Tratamento</span>
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight">Previsão de Recompra</h1>
+          <p className="text-muted-foreground text-lg">Antecipe as necessidades dos seus clientes de <span className="text-foreground font-semibold">uso contínuo</span>.</p>
+        </div>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-primary text-primary-foreground">
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="border-none bg-primary text-primary-foreground shadow-lg shadow-primary/20 overflow-hidden relative group">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium opacity-80">Recompras para hoje</CardTitle>
+            <CardTitle className="text-sm font-medium opacity-90">Recompras para hoje</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">8</div>
-            <p className="text-xs opacity-80">+2 em relação a ontem</p>
+            <div className="text-4xl font-black">8</div>
+            <div className="flex items-center gap-1 mt-1 text-xs opacity-80">
+              <ArrowUpRight className="h-3 w-3" />
+              <span>+2 em relação a ontem</span>
+            </div>
           </CardContent>
+          <Timer className="absolute -right-4 -bottom-4 h-24 w-24 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
         </Card>
-        <Card>
+        
+        <Card className="border-none shadow-sm hover:shadow-md transition-all">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Conversão de Recompra</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Conversão de Recompra</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">68%</div>
-            <p className="text-xs text-muted-foreground">Últimos 30 dias</p>
+            <p className="text-xs text-muted-foreground mt-1">Média dos últimos 30 dias</p>
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="border-none shadow-sm hover:shadow-md transition-all">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Ticket de Recompra</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Receita Projetada (7d)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">R$ 1.840</div>
-            <p className="text-xs text-muted-foreground">Projetado para esta semana</p>
+            <p className="text-xs text-muted-foreground mt-1">Baseado no histórico de compras</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-none shadow-sm">
+        <CardHeader className="border-b bg-muted/5">
           <CardTitle>Cronograma de Recompras</CardTitle>
           <CardDescription>Clientes com medicamentos próximos do fim</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
+        <CardContent className="p-0">
+          <div className="divide-y">
             {predictions.map((p) => (
-              <div key={p.id} className="flex flex-col gap-4 rounded-xl border p-4 transition-all hover:bg-muted/50 md:flex-row md:items-center">
+              <div key={p.id} className="flex flex-col gap-6 p-6 transition-all hover:bg-muted/30 md:flex-row md:items-center">
                 <div className="flex flex-1 items-center gap-4">
-                  <div className={cn(
-                    "flex h-12 w-12 items-center justify-center rounded-full",
-                    p.priority === "Alta" ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"
-                  )}>
-                    <Calendar className="h-6 w-6" />
-                  </div>
+                  <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold">{p.initials}</AvatarFallback>
+                  </Avatar>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-lg">{p.customer}</span>
-                    <span className="text-sm text-muted-foreground">{p.medication}</span>
+                    <span className="font-bold text-lg text-foreground/90">{p.customer}</span>
+                    <div className="flex items-center gap-1 text-xs text-primary font-medium">
+                      <Pill className="h-3 w-3" />
+                      {p.medication}
+                    </div>
                   </div>
                 </div>
                 
                 <div className="flex flex-1 flex-col gap-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Progresso do tratamento</span>
-                    <span className="font-medium">{p.progress}%</span>
+                  <div className="flex items-center justify-between text-xs font-semibold">
+                    <span className="text-muted-foreground uppercase tracking-tighter">Status do Estoque</span>
+                    <span className={cn(p.priority === "Alta" ? "text-destructive" : "text-primary")}>
+                      {p.progress}% utilizado
+                    </span>
                   </div>
-                  <Progress value={p.progress} className="h-2" />
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    Acaba em {p.daysLeft} dias ({p.date})
+                  <Progress value={p.progress} className={cn("h-2.5", p.priority === "Alta" ? "[&>div]:bg-destructive" : "")} />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      Acaba em <span className="text-foreground">{p.daysLeft} dias</span> ({p.date})
+                    </div>
+                    <Badge variant={p.priority === "Alta" ? "destructive" : p.priority === "Média" ? "secondary" : "outline"} className="text-[9px] rounded-lg">
+                      {p.priority}
+                    </Badge>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 md:ml-4">
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="rounded-xl gap-2 h-10 px-4 border-primary/20 text-primary hover:bg-primary/5">
                     <MessageCircle className="h-4 w-4" /> Notificar
                   </Button>
-                  <Button size="sm" className="gap-2">
-                    Recomprou <ArrowUpRight className="h-4 w-4" />
+                  <Button size="sm" className="rounded-xl gap-2 h-10 px-4 shadow-md shadow-primary/10">
+                    Registrar Recompra <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -111,6 +134,19 @@ function Repurchases() {
           </div>
         </CardContent>
       </Card>
+      
+      <div className="bg-secondary/30 rounded-3xl p-6 border border-secondary flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm">
+            <Stethoscope className="h-6 w-6" />
+          </div>
+          <div>
+            <h4 className="font-bold">Deseja automatizar esses avisos?</h4>
+            <p className="text-sm text-muted-foreground">Ative o envio automático via WhatsApp 48h antes do medicamento acabar.</p>
+          </div>
+        </div>
+        <Button variant="secondary" className="bg-white hover:bg-white/90 shadow-sm rounded-xl font-bold">Configurar Automação</Button>
+      </div>
     </div>
   );
 }
