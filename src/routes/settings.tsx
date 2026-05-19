@@ -1,12 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
-  Database, 
-  Globe, 
-  CheckCircle2,
   Settings as SettingsIcon,
-  Bell,
-  Users,
-  ShieldCheck,
   Save,
   Trash2
 } from "lucide-react";
@@ -14,18 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 
 export const Route = createFileRoute("/settings")({
-  component: SettingsPageWrapper,
+  component: SettingsPage,
 });
-
-
-function SettingsPageWrapper() {
-  return <SettingsPage />;
-}
 
 function SettingsPage() {
   return (
@@ -36,18 +22,16 @@ function SettingsPage() {
           <span className="text-xs font-semibold text-primary uppercase tracking-wider">Configurações do Sistema</span>
         </div>
         <h1 className="text-4xl font-extrabold tracking-tight">Configurações</h1>
-        <p className="text-muted-foreground text-lg">Gerencie sua conta, integrações e preferências do sistema</p>
+        <p className="text-muted-foreground text-lg">Gerencie sua conta e preferências do sistema</p>
       </header>
 
       <div className="space-y-6">
         <div className="flex flex-wrap gap-2 bg-muted/50 p-1 rounded-xl w-fit">
           <Button variant="ghost" className="rounded-lg bg-background shadow-sm">Farmácia</Button>
-          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed">Integrações</Button>
-          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed">Notificações</Button>
-          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed">Usuários</Button>
+          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed" disabled>Integrações</Button>
+          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed" disabled>Notificações</Button>
+          <Button variant="ghost" className="rounded-lg opacity-50 cursor-not-allowed" disabled>Usuários</Button>
         </div>
-
-        <div className="space-y-6">
 
         <div className="space-y-6">
           <Card className="border-none shadow-sm overflow-hidden">
