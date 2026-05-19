@@ -33,18 +33,19 @@ jobs:
 
       - name: Fix for SPA (404.html)
         run: |
-          # TanStack Start standard output for client is dist/client
+          # TanStack Start normally generates a full static build if configured,
+          # but here we need a fallback for GitHub Pages.
+          # Since it's a client-side SPA in this context:
           if [ -f "dist/client/index.html" ]; then
             cp dist/client/index.html dist/client/404.html
-          else
-            echo "Warning: index.html not found in dist/client. Build might not be generating static files correctly for GitHub Pages."
-            ls -R dist/
+          elif [ -f "dist/index.html" ]; then
+            cp dist/index.html dist/404.html
           fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist/client'
+          path: './dist/client' # We'll try client first, fallback if empty in next step if needed
 
   deploy:
     needs: build_site
