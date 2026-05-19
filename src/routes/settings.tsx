@@ -24,7 +24,7 @@ function ErrorFallback({ error }: FallbackProps) {
   return (
     <div className="p-4 border border-destructive bg-destructive/10 rounded-xl">
       <h2 className="text-lg font-bold text-destructive">Erro na página de configurações</h2>
-      <p className="text-sm text-muted-foreground">{error.message}</p>
+      <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
     </div>
   );
 }
