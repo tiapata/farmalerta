@@ -30,6 +30,7 @@ function ErrorFallback({ error }: FallbackProps) {
 }
 
 function SettingsPageWrapper() {
+  console.log("SettingsPageWrapper rendering");
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <SettingsPage />
@@ -38,6 +39,7 @@ function SettingsPageWrapper() {
 }
 
 function SettingsPage() {
+  console.log("SettingsPage rendering");
   return (
     <div className="flex flex-col gap-8">
       <header className="space-y-1">
