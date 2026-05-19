@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          # No cache if lock file is missing or using different managers
 
       - name: Install dependencies
         run: npm install
