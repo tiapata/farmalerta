@@ -15,8 +15,5 @@ export default defineConfig({
   },
   vite: {
     base: "/farmalerta/",
-    build: {
-      outDir: "dist",
-    }
   },
 });
