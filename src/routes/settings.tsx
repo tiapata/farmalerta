@@ -17,7 +17,7 @@ function SettingsPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6 animate-in fade-in duration-500 pb-10">
       <header className="space-y-2">
         <div className="flex items-center gap-2 text-primary">
           <SettingsIcon className="h-5 w-5" />
@@ -27,7 +27,6 @@ function SettingsPage() {
       </header>
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Navigation Sidebar */}
         <div className="w-full md:w-64 flex flex-col gap-1">
           {tabs.map((tab) => (
             <button
@@ -45,13 +44,12 @@ function SettingsPage() {
           ))}
         </div>
 
-        {/* Content Area */}
         <div className="flex-1 bg-card rounded-2xl border p-6 shadow-sm">
           {activeTab === "farmacia" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold">Dados da Farmácia</h2>
-                <p className="text-sm text-muted-foreground">Informações públicas e de contato da unidade.</p>
+                <p className="text-sm text-muted-foreground">Informações principais da sua unidade.</p>
               </div>
               
               <div className="grid gap-4">
@@ -60,7 +58,7 @@ function SettingsPage() {
                   <input 
                     type="text" 
                     defaultValue="Farmácia São João - Filial Centro"
-                    className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 
@@ -69,7 +67,7 @@ function SettingsPage() {
                   <input 
                     type="text" 
                     defaultValue="12.345.678/0001-90"
-                    className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
@@ -79,7 +77,7 @@ function SettingsPage() {
                     <input 
                       type="text" 
                       defaultValue="(11) 3344-5566"
-                      className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                      className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -87,14 +85,14 @@ function SettingsPage() {
                     <input 
                       type="text" 
                       defaultValue="(11) 98877-6655"
-                      className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none focus:ring-2 focus:ring-primary outline-none"
+                      className="w-full px-4 py-2 rounded-lg bg-muted/50 border-none outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4">
-                <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <div className="pt-4 border-t">
+                <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-opacity">
                   <Save className="h-4 w-4" />
                   Salvar Alterações
                 </button>
@@ -104,11 +102,11 @@ function SettingsPage() {
 
           {activeTab !== "farmacia" && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="bg-muted rounded-full p-4 mb-4">
-                <SettingsIcon className="h-8 w-8 text-muted-foreground" />
+              <div className="bg-muted rounded-full p-4 mb-4 text-muted-foreground">
+                <SettingsIcon className="h-8 w-8" />
               </div>
               <h3 className="text-lg font-medium">Em desenvolvimento</h3>
-              <p className="text-sm text-muted-foreground max-w-xs">Esta seção de configurações estará disponível em breve.</p>
+              <p className="text-sm text-muted-foreground max-w-xs">Esta funcionalidade estará disponível em breve.</p>
             </div>
           )}
         </div>
