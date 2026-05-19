@@ -29,7 +29,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_BASE_PATH: /FarmAlerta/
+          VITE_BASE_PATH: /farmalerta/
 
       - name: Fix for SPA (404.html)
         run: |
