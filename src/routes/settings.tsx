@@ -22,7 +22,7 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   return (
-    <div className="flex flex-col gap-6 p-6 md:p-10 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6  animate-in fade-in duration-500">
       <header>
         <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
         <p className="text-muted-foreground">Gerencie sua conta, integrações e preferências do sistema</p>
