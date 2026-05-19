@@ -21,7 +21,7 @@ const menuItems = [
 
 export function Sidebar() {
   return (
-    <div className="flex flex-col w-64 h-screen border-r bg-card">
+    <div className="flex flex-col w-64 h-screen border-r bg-card flex-shrink-0">
       <div className="flex h-20 items-center px-6">
         <div className="flex items-center gap-3 font-bold text-primary">
           <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
@@ -55,4 +55,3 @@ export function Sidebar() {
     </div>
   );
 }
-
