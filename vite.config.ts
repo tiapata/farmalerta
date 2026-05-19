@@ -16,5 +16,12 @@ export default defineConfig({
   },
   vite: {
     base: "/farmalerta/",
+    build: {
+      rollupOptions: {
+        input: {
+          main: "./index.html",
+        },
+      },
+    },
   },
 });
