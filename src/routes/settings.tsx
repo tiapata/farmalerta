@@ -14,12 +14,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 
 export const Route = createFileRoute("/settings")({
-  component: SettingsPage,
+  component: SettingsPageWrapper,
 });
 
+function ErrorFallback({ error }: FallbackProps) {
+  return (
+    <div className="p-4 border border-destructive bg-destructive/10 rounded-xl">
+      <h2 className="text-lg font-bold text-destructive">Erro na página de configurações</h2>
+      <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
+    </div>
+  );
+}
+
+function SettingsPageWrapper() {
+  console.log("SettingsPageWrapper rendering");
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <SettingsPage />
+    </ErrorBoundary>
+  );
+}
+
 function SettingsPage() {
+  console.log("SettingsPage rendering");
   return (
     <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
       <header className="space-y-1">
@@ -32,12 +52,14 @@ function SettingsPage() {
       </header>
 
       <Tabs defaultValue="pharmacy" className="space-y-6">
-        <TabsList className="bg-muted/50 p-1 w-full md:w-auto overflow-x-auto justify-start h-auto">
-          <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4">Farmácia</TabsTrigger>
-          <TabsTrigger value="integrations" className="rounded-lg py-2 px-4">Integrações</TabsTrigger>
-          <TabsTrigger value="notifications" className="rounded-lg py-2 px-4">Notificações</TabsTrigger>
-          <TabsTrigger value="users" className="rounded-lg py-2 px-4">Usuários</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-2">
+          <TabsList className="bg-muted/50 p-1 inline-flex w-auto justify-start h-auto min-w-full md:min-w-0">
+            <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 whitespace-nowrap">Farmácia</TabsTrigger>
+            <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 whitespace-nowrap">Integrações</TabsTrigger>
+            <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 whitespace-nowrap">Notificações</TabsTrigger>
+            <TabsTrigger value="users" className="rounded-lg py-2 px-4 whitespace-nowrap">Usuários</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="pharmacy" className="space-y-6 animate-in fade-in duration-500">
           <Card className="border-none shadow-sm overflow-hidden">

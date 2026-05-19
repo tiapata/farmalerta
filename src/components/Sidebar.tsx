@@ -63,7 +63,7 @@ export function Sidebar() {
         {menuItems.map((item) => (
           <Link
             key={item.href}
-            to={item.href}
+            to={item.href as any}
             activeProps={{ className: "bg-primary text-primary-foreground shadow-md shadow-primary/20 font-medium" }}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-accent-foreground group"
           >
