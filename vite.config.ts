@@ -15,5 +15,5 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
   ],
-  base: process.env.VITE_BASE_PATH || "/farmalerta/",
+  base: "/farmalerta/",
 });
