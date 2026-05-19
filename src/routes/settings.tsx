@@ -30,7 +30,6 @@ function ErrorFallback({ error }: FallbackProps) {
 }
 
 function SettingsPageWrapper() {
-  console.log("SettingsPageWrapper rendering");
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <SettingsPage />
@@ -39,9 +38,8 @@ function SettingsPageWrapper() {
 }
 
 function SettingsPage() {
-  console.log("SettingsPage rendering");
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pb-10">
       <header className="space-y-1">
         <div className="flex items-center gap-2">
           <SettingsIcon className="h-4 w-4 text-primary" />
@@ -52,14 +50,12 @@ function SettingsPage() {
       </header>
 
       <Tabs defaultValue="pharmacy" className="space-y-6">
-        <div className="overflow-x-auto pb-2">
-          <TabsList className="bg-muted/50 p-1 flex w-full md:w-max justify-start h-auto">
-            <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Farmácia</TabsTrigger>
-            <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Integrações</TabsTrigger>
-            <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Notificações</TabsTrigger>
-            <TabsTrigger value="users" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Usuários</TabsTrigger>
-          </TabsList>
-        </div>
+        <TabsList className="bg-muted/50 p-1 flex w-full md:w-max justify-start h-auto">
+          <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Farmácia</TabsTrigger>
+          <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Integrações</TabsTrigger>
+          <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Notificações</TabsTrigger>
+          <TabsTrigger value="users" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Usuários</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="pharmacy" className="space-y-6 outline-none">
           <Card className="border-none shadow-sm overflow-hidden">

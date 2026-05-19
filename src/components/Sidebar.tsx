@@ -20,7 +20,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Sidebar() {
-  console.log("Sidebar rendering");
   const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
 
