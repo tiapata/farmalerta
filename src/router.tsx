@@ -11,7 +11,7 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreload: false,
     defaultPreloadStaleTime: 0,
-    basepath: import.meta.env.BASE_URL || "/farmalerta/",
+    basepath: import.meta.env.BASE_URL,
   });
 
   return router;
