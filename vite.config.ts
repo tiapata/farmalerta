@@ -15,5 +15,8 @@ export default defineConfig({
   },
   vite: {
     base: "/FarmAlerta/",
+    build: {
+      outDir: "dist/client",
+    }
   },
 });
