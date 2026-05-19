@@ -12,6 +12,7 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
     appDirectory: "src",
+    static: true,
   },
   vite: {
     base: "/farmalerta/",
