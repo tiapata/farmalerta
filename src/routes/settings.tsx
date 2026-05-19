@@ -32,11 +32,7 @@ function ErrorFallback({ error }: FallbackProps) {
 }
 
 function SettingsPageWrapper() {
-  return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <SettingsPage />
-    </ErrorBoundary>
-  );
+  return <SettingsPage />;
 }
 
 function SettingsPage() {
@@ -53,10 +49,10 @@ function SettingsPage() {
 
       <Tabs defaultValue="pharmacy" className="space-y-6">
         <TabsList className="bg-muted/50 p-1 flex w-full md:w-max justify-start h-auto">
-          <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Farmácia</TabsTrigger>
-          <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Integrações</TabsTrigger>
-          <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Notificações</TabsTrigger>
-          <TabsTrigger value="users" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Usuários</TabsTrigger>
+          <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4">Farmácia</TabsTrigger>
+          <TabsTrigger value="integrations" className="rounded-lg py-2 px-4">Integrações</TabsTrigger>
+          <TabsTrigger value="notifications" className="rounded-lg py-2 px-4">Notificações</TabsTrigger>
+          <TabsTrigger value="users" className="rounded-lg py-2 px-4">Usuários</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pharmacy" className="space-y-6 outline-none">
