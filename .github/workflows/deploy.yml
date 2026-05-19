@@ -43,6 +43,9 @@ jobs:
         with:
           path: './dist/client'
 
+      - name: Fix 404 for SPA
+        run: cp dist/client/index.html dist/client/404.html
+
   deploy:
     environment:
       name: github-pages
