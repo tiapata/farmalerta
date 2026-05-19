@@ -6,7 +6,9 @@ import {
   Settings as SettingsIcon,
   Bell,
   Users,
-  ShieldCheck
+  ShieldCheck,
+  Save,
+  Trash2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +41,7 @@ function SettingsPageWrapper() {
 
 function SettingsPage() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pb-10">
       <header className="space-y-1">
         <div className="flex items-center gap-2">
           <SettingsIcon className="h-4 w-4 text-primary" />
@@ -50,14 +52,12 @@ function SettingsPage() {
       </header>
 
       <Tabs defaultValue="pharmacy" className="space-y-6">
-        <div className="overflow-x-auto pb-2">
-          <TabsList className="bg-muted/50 p-1 flex w-full md:w-max justify-start h-auto">
-            <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Farmácia</TabsTrigger>
-            <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Integrações</TabsTrigger>
-            <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Notificações</TabsTrigger>
-            <TabsTrigger value="users" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Usuários</TabsTrigger>
-          </TabsList>
-        </div>
+        <TabsList className="bg-muted/50 p-1 flex w-full md:w-max justify-start h-auto">
+          <TabsTrigger value="pharmacy" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Farmácia</TabsTrigger>
+          <TabsTrigger value="integrations" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Integrações</TabsTrigger>
+          <TabsTrigger value="notifications" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Notificações</TabsTrigger>
+          <TabsTrigger value="users" className="rounded-lg py-2 px-4 flex-1 md:flex-none">Usuários</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="pharmacy" className="space-y-6 outline-none">
           <Card className="border-none shadow-sm overflow-hidden">
@@ -84,7 +84,9 @@ function SettingsPage() {
                   <Input id="whatsapp" defaultValue="(11) 98877-6655" className="rounded-xl border-none bg-muted/30" />
                 </div>
               </div>
-              <Button className="rounded-xl shadow-lg shadow-primary/20 px-8">Salvar Alterações</Button>
+              <Button className="rounded-xl shadow-lg shadow-primary/20 px-8 gap-2">
+                <Save className="h-4 w-4" /> Salvar Alterações
+              </Button>
             </CardContent>
           </Card>
 
@@ -94,7 +96,9 @@ function SettingsPage() {
               <CardDescription>Ações irreversíveis na sua conta</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <Button variant="destructive" className="rounded-xl">Excluir todos os dados</Button>
+              <Button variant="destructive" className="rounded-xl gap-2">
+                <Trash2 className="h-4 w-4" /> Excluir todos os dados
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
