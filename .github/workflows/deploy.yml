@@ -38,13 +38,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Fix 404 for SPA
+        run: cp dist/client/index.html dist/client/404.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist/client'
-
-      - name: Fix 404 for SPA
-        run: cp dist/client/index.html dist/client/404.html
 
   deploy:
     environment:
