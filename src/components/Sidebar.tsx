@@ -36,9 +36,9 @@ export function Sidebar() {
         <div className="flex h-16 items-center justify-between px-6">
           <div className={cn("flex items-center gap-2 font-bold text-primary", !isOpen && "hidden")}>
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
-              FP
+              FA
             </div>
-            <span>FarmaPulse</span>
+            <span>FarmAlerta</span>
           </div>
           {!isOpen && (
              <div className="mx-auto h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
