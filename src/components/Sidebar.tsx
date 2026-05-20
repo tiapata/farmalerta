@@ -8,7 +8,6 @@ import {
   Clock
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -17,7 +16,7 @@ const menuItems = [
   { icon: Clock, label: "Inativos", href: "/inactive" },
   { icon: MessageSquare, label: "Campanhas", href: "/campaigns" },
   { icon: Settings, label: "Configurações", href: "/settings" },
-];
+] as const;
 
 export function Sidebar() {
   return (
@@ -35,7 +34,7 @@ export function Sidebar() {
         {menuItems.map((item) => (
           <Link
             key={item.href}
-            to={item.href as any}
+            to={item.href}
             activeProps={{ 
               className: "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-medium" 
             }}
