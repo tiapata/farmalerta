@@ -188,7 +188,9 @@ function Dashboard() {
               </div>
             ))}
             <Button className="w-full mt-2 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 font-bold">
-              Ir para Campanhas
+              <Link to="/campaigns">
+                Ir para Campanhas
+              </Link>
             </Button>
           </CardContent>
         </Card>
