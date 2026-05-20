@@ -20,6 +20,7 @@ const menuItems = [
 ];
 
 export function Sidebar() {
+  console.log("Sidebar rendering");
   return (
     <div className="flex flex-col w-64 h-screen border-r bg-card flex-shrink-0">
       <div className="flex h-20 items-center px-6">
