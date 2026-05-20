@@ -28,7 +28,10 @@ function SettingsPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <div className="flex items-center gap-2 text-primary">
+          <Building2 className="h-6 w-6" />
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Configurações</h1>
+        </div>
         <p className="text-muted-foreground">Gerencie as preferências da sua plataforma.</p>
       </div>
 
@@ -67,7 +70,7 @@ function SettingsPage() {
                     <input 
                       type="text" 
                       placeholder="Nome da sua farmácia"
-                      className="w-full h-11 px-4 rounded-lg bg-background border focus:ring-2 focus:ring-primary outline-none transition-all"
+                      className="w-full h-11 px-4 rounded-lg bg-background border border-input focus:ring-2 focus:ring-primary outline-none transition-all"
                       defaultValue="Farmácia São João"
                     />
                   </div>
@@ -76,7 +79,7 @@ function SettingsPage() {
                     <input 
                       type="text" 
                       placeholder="00.000.000/0000-00"
-                      className="w-full h-11 px-4 rounded-lg bg-background border focus:ring-2 focus:ring-primary outline-none transition-all"
+                      className="w-full h-11 px-4 rounded-lg bg-background border border-input focus:ring-2 focus:ring-primary outline-none transition-all"
                       defaultValue="12.345.678/0001-90"
                     />
                   </div>
@@ -87,7 +90,7 @@ function SettingsPage() {
                   <input 
                     type="text" 
                     placeholder="Rua, número, bairro..."
-                    className="w-full h-11 px-4 rounded-lg bg-background border focus:ring-2 focus:ring-primary outline-none transition-all"
+                    className="w-full h-11 px-4 rounded-lg bg-background border border-input focus:ring-2 focus:ring-primary outline-none transition-all"
                     defaultValue="Av. Principal, 1000 - Centro"
                   />
                 </div>
@@ -96,11 +99,11 @@ function SettingsPage() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Telefone</label>
                     <div className="relative">
-                      < स्मार्टफोन className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <input 
                         type="text" 
                         placeholder="(00) 0000-0000"
-                        className="w-full h-11 pl-10 pr-4 rounded-lg bg-background border focus:ring-2 focus:ring-primary outline-none transition-all"
+                        className="w-full h-11 pl-10 pr-4 rounded-lg bg-background border border-input focus:ring-2 focus:ring-primary outline-none transition-all"
                         defaultValue="(11) 3344-5566"
                       />
                     </div>
@@ -112,7 +115,7 @@ function SettingsPage() {
                       <input 
                         type="url" 
                         placeholder="www.suafarmacia.com.br"
-                        className="w-full h-11 pl-10 pr-4 rounded-lg bg-background border focus:ring-2 focus:ring-primary outline-none transition-all"
+                        className="w-full h-11 pl-10 pr-4 rounded-lg bg-background border border-input focus:ring-2 focus:ring-primary outline-none transition-all"
                         defaultValue="www.farmaciasaojoao.com.br"
                       />
                     </div>
@@ -122,7 +125,7 @@ function SettingsPage() {
                     <input 
                       type="email" 
                       placeholder="contato@exemplo.com"
-                      className="w-full h-11 px-4 rounded-lg bg-background border focus:ring-2 focus:ring-primary outline-none transition-all"
+                      className="w-full h-11 px-4 rounded-lg bg-background border border-input focus:ring-2 focus:ring-primary outline-none transition-all"
                       defaultValue="contato@saojoao.com.br"
                     />
                   </div>
