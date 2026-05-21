@@ -79,9 +79,59 @@ function Customers() {
           <Button variant="outline" className="rounded-xl border-none bg-card shadow-sm gap-2">
             <Download className="h-4 w-4" /> Exportar CSV
           </Button>
-          <Button className="rounded-xl shadow-lg shadow-primary/20 gap-2">
-            <Plus className="h-4 w-4" /> Novo Cliente
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="rounded-xl shadow-lg shadow-primary/20 gap-2">
+                <Plus className="h-4 w-4" /> Novo Cliente
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Novo Cliente</DialogTitle>
+                <DialogDescription>
+                  Preencha os dados básicos para cadastrar um novo cliente.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Nome Completo</Label>
+                  <Input 
+                    id="name" 
+                    value={newCustomer.name} 
+                    onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="phone">Telefone / WhatsApp</Label>
+                  <Input 
+                    id="phone" 
+                    value={newCustomer.phone} 
+                    onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email">E-mail (Opcional)</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={newCustomer.email} 
+                    onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="cpf">CPF (Opcional)</Label>
+                  <Input 
+                    id="cpf" 
+                    value={newCustomer.cpf} 
+                    onChange={(e) => setNewCustomer({ ...newCustomer, cpf: e.target.value })}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleAddCustomer} className="w-full">Cadastrar Cliente</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </header>
 
