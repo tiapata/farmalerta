@@ -22,7 +22,7 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   const { pharmacy, loading: loadingPharmacy, updatePharmacy } = usePharmacy();
-  const { profiles, loading: loadingProfiles } = useProfiles();
+  const { profiles, loading: loadingProfiles, refresh: refreshProfiles } = useProfiles();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -30,6 +30,13 @@ function SettingsPage() {
     email: "",
     phone: "",
     whatsapp: ""
+  });
+
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    full_name: "",
+    email: "",
+    role: "user"
   });
 
   useEffect(() => {
@@ -46,6 +53,36 @@ function SettingsPage() {
 
   const handleSave = async () => {
     await updatePharmacy(formData);
+  };
+
+  const handleAddUser = async () => {
+    try {
+      if (!newUser.full_name || !newUser.email) {
+        toast.error("Preencha todos os campos obrigatórios");
+        return;
+      }
+
+      // Since we don't have a backend to create Auth users, we'll just insert into profiles for now
+      // This is for demonstration, normally this would be an Edge Function or specialized hook
+      const { data, error } = await supabase
+        .from("profiles")
+        .insert([{
+          id: crypto.randomUUID(), // Mock ID for demonstration
+          full_name: newUser.full_name,
+          role: newUser.role,
+          pharmacy_id: pharmacy?.id
+        } as any]);
+
+      if (error) throw error;
+      
+      toast.success("Usuário cadastrado com sucesso!");
+      setIsUserDialogOpen(false);
+      setNewUser({ full_name: "", email: "", role: "user" });
+      refreshProfiles();
+    } catch (error: any) {
+      console.error("Error adding user:", error);
+      toast.error("Erro ao cadastrar usuário");
+    }
   };
 
   return (
