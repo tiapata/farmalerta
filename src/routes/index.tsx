@@ -12,19 +12,23 @@ import {
   ArrowUpRight,
   Search,
   Bell,
-  Filter
+  Filter,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { usePharmacy } from "@/hooks/use-pharmacy";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
 });
 
 function Dashboard() {
+  const { pharmacy, loading } = usePharmacy();
   const stats = [
     { title: "Receita Recuperável", value: "R$ 12.450", trend: "+12.5%", description: "Potencial de inativos", icon: TrendingUp, color: "text-green-600", bg: "bg-green-100" },
     { title: "Clientes em Risco", value: "24", trend: "-2", description: "30+ dias sem compra", icon: UserMinus, color: "text-orange-600", bg: "bg-orange-100" },
