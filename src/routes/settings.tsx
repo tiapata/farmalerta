@@ -7,16 +7,42 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode } from "lucide-react";
+import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { usePharmacy } from "@/hooks/use-pharmacy";
+import { useProfiles } from "@/hooks/use-profiles";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const handleSave = () => {
-    toast.success("Configurações salvas com sucesso!");
+  const { pharmacy, loading: loadingPharmacy, updatePharmacy } = usePharmacy();
+  const { profiles, loading: loadingProfiles } = useProfiles();
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    cnpj: "",
+    email: "",
+    phone: "",
+    whatsapp: ""
+  });
+
+  useEffect(() => {
+    if (pharmacy) {
+      setFormData({
+        name: pharmacy.name || "",
+        cnpj: pharmacy.cnpj || "",
+        email: pharmacy.email || "",
+        phone: pharmacy.phone || "",
+        whatsapp: pharmacy.whatsapp || ""
+      });
+    }
+  }, [pharmacy]);
+
+  const handleSave = async () => {
+    await updatePharmacy(formData);
   };
 
   return (
