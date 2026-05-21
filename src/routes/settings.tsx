@@ -252,32 +252,35 @@ function SettingsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">João Silva</TableCell>
-                    <TableCell>joao@farmacia.com.br</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">Administrador</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">Editar</Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Maria Oliveira</TableCell>
-                    <TableCell>maria@farmacia.com.br</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">Usuário</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">Editar</Button>
-                    </TableCell>
-                  </TableRow>
+                  {loadingProfiles ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ) : profiles.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        Nenhum usuário cadastrado.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    profiles.map((profile) => (
+                      <TableRow key={profile.id}>
+                        <TableCell className="font-medium">{profile.full_name || "Sem nome"}</TableCell>
+                        <TableCell>{profile.email || "---"}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{profile.role === "admin" ? "Administrador" : "Usuário"}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm">Editar</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
