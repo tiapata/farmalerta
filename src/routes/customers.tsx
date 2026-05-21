@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   Download,
   Mail,
-  History
+  History,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,19 +27,31 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useCustomers, Customer } from "@/hooks/use-customers";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/customers")({
   component: Customers,
 });
 
 function Customers() {
-  const customers = [
-    { id: 1, name: "Maria Oliveira", status: "VIP", lastBuy: "2 dias atrás", ticket: "R$ 150", phone: "(11) 98765-4321", frequency: "Mensal", initials: "MO" },
-    { id: 2, name: "João Santos", status: "Em risco", lastBuy: "15 dias atrás", ticket: "R$ 80", phone: "(11) 98888-7777", frequency: "Quinzenal", initials: "JS" },
-    { id: 3, name: "Ana Costa", status: "Ativo", lastBuy: "5 dias atrás", ticket: "R$ 220", phone: "(11) 97777-6666", frequency: "Mensal", initials: "AC" },
-    { id: 4, name: "Carlos Pereira", status: "Inativo", lastBuy: "60 dias atrás", ticket: "R$ 45", phone: "(11) 96666-5555", frequency: "Ocasional", initials: "CP" },
-    { id: 5, name: "Beatriz Silva", status: "Recuperável", lastBuy: "35 dias atrás", ticket: "R$ 110", phone: "(11) 95555-4444", frequency: "Mensal", initials: "BS" },
-  ];
+  const { customers, loading, addCustomer } = useCustomers();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    cpf: ""
+  });
+
+  const handleAddCustomer = async () => {
+    if (!newCustomer.name || !newCustomer.phone) return;
+    await addCustomer(newCustomer);
+    setIsDialogOpen(false);
+    setNewCustomer({ name: "", phone: "", email: "", cpf: "" });
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
