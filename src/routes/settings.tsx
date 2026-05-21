@@ -275,10 +275,61 @@ function SettingsPage() {
                   Gerencie quem tem acesso ao painel da sua farmácia.
                 </CardDescription>
               </div>
-              <Button className="gap-2">
-                <Plus className="w-4 h-4" />
-                Novo Usuário
-              </Button>
+              <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Novo Usuário
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Novo Usuário</DialogTitle>
+                    <DialogDescription>
+                      Cadastre um novo membro para sua equipe.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="user-name">Nome Completo</Label>
+                      <Input 
+                        id="user-name" 
+                        value={newUser.full_name}
+                        onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
+                        placeholder="Ex: João da Silva"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="user-email">E-mail</Label>
+                      <Input 
+                        id="user-email" 
+                        type="email"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        placeholder="email@exemplo.com"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="user-role">Perfil de Acesso</Label>
+                      <Select 
+                        value={newUser.role} 
+                        onValueChange={(val) => setNewUser({ ...newUser, role: val })}
+                      >
+                        <SelectTrigger id="user-role">
+                          <SelectValue placeholder="Selecione um perfil" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Administrador</SelectItem>
+                          <SelectItem value="user">Usuário</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleAddUser} className="w-full">Cadastrar Usuário</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardHeader>
             <CardContent>
               <Table>
