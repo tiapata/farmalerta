@@ -35,13 +35,7 @@ export function Sidebar() {
           <Link
             key={item.href}
             to={item.href}
-            activeProps={{ 
-              className: "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-medium" 
-            }}
-            inactiveProps={{ 
-              className: "text-muted-foreground hover:bg-muted hover:text-foreground" 
-            }}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 group"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 group text-muted-foreground hover:bg-muted hover:text-foreground [&.active]:bg-primary [&.active]:text-primary-foreground [&.active]:shadow-lg [&.active]:shadow-primary/20 [&.active]:font-medium"
           >
             <item.icon className="h-5 w-5" />
             <span className="text-sm">{item.label}</span>
