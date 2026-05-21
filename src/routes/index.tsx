@@ -84,7 +84,7 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-xl md:text-2xl font-bold">{stat.value}</div>
                 <div className="text-[10px] font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded-md flex items-center">
                   <ArrowUpRight className="h-3 w-3 mr-0.5" />
                   {stat.trend}
