@@ -1,4 +1,3 @@
-// Standard Vite SPA configuration for GitHub Pages deployment
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
@@ -15,5 +14,5 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
   ],
-  base: "/farmalerta",
+  base: "./",
 });
