@@ -51,8 +51,8 @@ function Dashboard() {
             <Badge variant="secondary" className="bg-primary/10 text-primary border-none font-medium">Dashboard v2.0</Badge>
             <span className="text-xs text-muted-foreground">• Atualizado agora</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground/90">
-            Olá, <span className="text-primary">Farmácia Central</span> 👋
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground/90">
+            Olá, <span className="text-primary">{loading ? "..." : (pharmacy?.name || "Farmácia")}</span> 👋
           </h1>
           <p className="text-muted-foreground text-lg">
             Você tem <span className="text-foreground font-semibold">12 ações prioritárias</span> para hoje.
