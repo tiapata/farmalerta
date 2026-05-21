@@ -48,7 +48,7 @@ function Dashboard() {
             <span className="text-xs text-muted-foreground">• Atualizado agora</span>
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground/90">
-            Olá, <span className="text-primary">São João</span> 👋
+            Olá, <span className="text-primary">Farmácia Central</span> 👋
           </h1>
           <p className="text-muted-foreground text-lg">
             Você tem <span className="text-foreground font-semibold">12 ações prioritárias</span> para hoje.
