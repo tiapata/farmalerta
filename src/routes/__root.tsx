@@ -99,12 +99,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <HeadContent />
       <div className="flex flex-col md:flex-row min-h-screen">
         <Sidebar />
         <main className="flex-1 overflow-auto bg-background/50 p-4 md:p-8 pt-20 md:pt-8">
           <Outlet />
         </main>
       </div>
+      <Scripts />
     </QueryClientProvider>
   );
 }
