@@ -13,6 +13,7 @@ import {
 import { Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
