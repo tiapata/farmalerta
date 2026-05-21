@@ -86,28 +86,52 @@ function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="farmacia-nome">Nome da Farmácia</Label>
-                  <Input id="farmacia-nome" defaultValue="Farmácia Central" />
+                  <Input 
+                    id="farmacia-nome" 
+                    value={formData.name} 
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cnpj">CNPJ</Label>
-                  <Input id="cnpj" defaultValue="00.000.000/0001-00" placeholder="00.000.000/0000-00" />
+                  <Input 
+                    id="cnpj" 
+                    value={formData.cnpj} 
+                    onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+                    placeholder="00.000.000/0001-00" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">E-mail Comercial</Label>
-                  <Input id="email" type="email" defaultValue="contato@farmaciacentral.com.br" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={formData.email} 
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="telefone">Telefone Comercial</Label>
-                  <Input id="telefone" defaultValue="(11) 4002-8922" placeholder="(00) 0000-0000" />
+                  <Input 
+                    id="telefone" 
+                    value={formData.phone} 
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="(00) 0000-0000" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp">WhatsApp Business</Label>
-                  <Input id="whatsapp" defaultValue="(11) 98888-7777" placeholder="(00) 00000-0000" />
+                  <Input 
+                    id="whatsapp" 
+                    value={formData.whatsapp} 
+                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    placeholder="(00) 00000-0000" 
+                  />
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button onClick={handleSave} className="gap-2">
-                  <Save className="w-4 h-4" />
+                <Button onClick={handleSave} className="gap-2" disabled={loadingPharmacy}>
+                  {loadingPharmacy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Salvar alterações
                 </Button>
               </div>
