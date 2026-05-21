@@ -12,6 +12,9 @@ import { toast } from "sonner";
 import { usePharmacy } from "@/hooks/use-pharmacy";
 import { useProfiles } from "@/hooks/use-profiles";
 import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
