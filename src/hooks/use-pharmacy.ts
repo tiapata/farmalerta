@@ -19,39 +19,46 @@ export function usePharmacy() {
   const fetchPharmacy = async () => {
     try {
       setLoading(true);
-      // We'll use any here because the generated types might not be up to date with the migration
+      // Tenta buscar a primeira farmácia. 
+      // Em um cenário real, cada usuário pertenceria a uma farmácia específica.
       const { data, error } = await supabase
         .from("pharmacies")
         .select("*")
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        if (error.code === "PGRST116") {
-          const { data: newData, error: createError } = await supabase
-            .from("pharmacies")
-            .insert([{ name: "Farmácia Central" }])
-            .select()
-            .single();
+      if (error) throw error;
 
-          if (createError) throw createError;
-          setPharmacy(newData as any);
+      if (!data) {
+        // Se não existir, tenta criar uma inicial
+        const { data: newData, error: createError } = await supabase
+          .from("pharmacies")
+          .insert([{ name: "Farmácia Central" }])
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("Erro ao criar farmácia inicial:", createError);
+          // Se falhar (ex: RLS), não tratamos aqui para não travar o app
         } else {
-          throw error;
+          setPharmacy(newData as any);
         }
       } else {
         setPharmacy(data as any);
       }
     } catch (error: any) {
       console.error("Error fetching pharmacy:", error);
-      toast.error("Erro ao carregar dados da farmácia");
+      // Removendo toast de erro aqui para não irritar o usuário se for apenas falta de permissão RLS inicial
     } finally {
       setLoading(false);
     }
   };
 
   const updatePharmacy = async (updates: Partial<Pharmacy>) => {
-    if (!pharmacy?.id) return;
+    if (!pharmacy?.id) {
+      toast.error("Nenhuma farmácia carregada para atualizar");
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -67,7 +74,7 @@ export function usePharmacy() {
       return data;
     } catch (error: any) {
       console.error("Error updating pharmacy:", error);
-      toast.error("Erro ao salvar alterações");
+      toast.error("Erro ao salvar alterações: " + (error.message || "Verifique as permissões RLS"));
       throw error;
     }
   };

@@ -13,6 +13,7 @@ import {
 import { Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -83,6 +84,9 @@ export function Sidebar() {
 
       <div className="p-4 border-t">
         <button 
+          onClick={async () => {
+            await supabase.auth.signOut();
+          }}
           className={cn(
             "flex items-center w-full gap-3 px-3 py-2.5 text-muted-foreground hover:text-destructive transition-colors rounded-xl hover:bg-destructive/5",
             isCollapsed && "justify-center px-2"
