@@ -47,7 +47,7 @@ function Dashboard() {
             <Badge variant="secondary" className="bg-primary/10 text-primary border-none font-medium">Dashboard v2.0</Badge>
             <span className="text-xs text-muted-foreground">• Atualizado agora</span>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground/90">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground/90">
             Olá, <span className="text-primary">Farmácia Central</span> 👋
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -80,7 +80,7 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">
-                <div className="text-3xl font-bold">{stat.value}</div>
+                <div className="text-2xl font-bold">{stat.value}</div>
                 <div className="text-[10px] font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded-md flex items-center">
                   <ArrowUpRight className="h-3 w-3 mr-0.5" />
                   {stat.trend}
