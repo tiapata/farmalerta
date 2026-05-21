@@ -22,7 +22,7 @@ function NotFoundComponent() {
         </p>
         <div className="mt-6">
           <Link
-            to="/farmalerta"
+            to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Go home
@@ -56,19 +56,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Try again
           </button>
-          <a
-            href="/farmalerta"
+          <Link
+            to="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             Go home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<{}>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -89,37 +89,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
   }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
 
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
-
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
+      <HeadContent />
       <div className="flex flex-col md:flex-row min-h-screen">
         <Sidebar />
         <main className="flex-1 overflow-auto bg-background/50 p-4 md:p-8 pt-20 md:pt-8">
           <Outlet />
         </main>
       </div>
-    </QueryClientProvider>
+      <Scripts />
+    </>
   );
 }

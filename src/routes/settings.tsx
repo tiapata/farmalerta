@@ -8,7 +8,7 @@ function SettingsPage() {
   return (
     <div className="p-8 space-y-4">
       <h1 className="text-3xl font-bold">Configurações</h1>
-      <p className="text-muted-foreground">Esta é a nova página de configurações, reconstruída do zero.</p>
+      <p className="text-muted-foreground">Esta é a nova página de configurações, reconstruída para máxima performance e estabilidade.</p>
       
       <div className="grid gap-6 mt-8">
         <div className="p-6 bg-card rounded-xl border">
