@@ -68,7 +68,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<{}>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -95,10 +95,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <HeadContent />
       <div className="flex flex-col md:flex-row min-h-screen">
         <Sidebar />
@@ -107,6 +105,6 @@ function RootComponent() {
         </main>
       </div>
       <Scripts />
-    </QueryClientProvider>
+    </>
   );
 }
