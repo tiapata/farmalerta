@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { Sidebar } from "@/components/Sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -104,6 +105,7 @@ function RootComponent() {
           <Outlet />
         </main>
       </div>
+      <Toaster />
       <Scripts />
     </>
   );
