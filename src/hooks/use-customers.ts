@@ -38,7 +38,7 @@ export function useCustomers() {
     }
   };
 
-  const addCustomer = async (customer: Partial<Customer>) => {
+  const addCustomer = async (customer: { name: string, phone: string } & Partial<Customer>) => {
     try {
       // Get the pharmacy ID first (assuming one pharmacy for now)
       const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).single();
@@ -47,7 +47,7 @@ export function useCustomers() {
 
       const { data, error } = await supabase
         .from("customers")
-        .insert([{ ...customer, pharmacy_id: pharmacy.id }])
+        .insert([{ ...customer, pharmacy_id: pharmacy.id } as any])
         .select()
         .single();
 
