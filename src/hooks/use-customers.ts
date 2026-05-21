@@ -32,7 +32,7 @@ export function useCustomers() {
       setCustomers(data || []);
     } catch (error: any) {
       console.error("Error fetching customers:", error);
-      toast.error("Erro ao carregar clientes");
+      // toast.error("Erro ao carregar clientes");
     } finally {
       setLoading(false);
     }
@@ -40,10 +40,13 @@ export function useCustomers() {
 
   const addCustomer = async (customer: { name: string, phone: string } & Partial<Customer>) => {
     try {
-      // Get the pharmacy ID first (assuming one pharmacy for now)
-      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).single();
+      // Busca a farmácia disponível
+      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
       
-      if (!pharmacy) throw new Error("Farmácia não encontrada");
+      if (!pharmacy) {
+        toast.error("É necessário configurar a farmácia antes de cadastrar clientes");
+        return;
+      }
 
       const { data, error } = await supabase
         .from("customers")
@@ -52,12 +55,13 @@ export function useCustomers() {
         .single();
 
       if (error) throw error;
+      
       setCustomers(prev => [...prev, data]);
       toast.success("Cliente cadastrado com sucesso!");
       return data;
     } catch (error: any) {
       console.error("Error adding customer:", error);
-      toast.error("Erro ao cadastrar cliente");
+      toast.error("Erro ao cadastrar cliente: " + (error.message || "Verifique o banco de dados"));
       throw error;
     }
   };

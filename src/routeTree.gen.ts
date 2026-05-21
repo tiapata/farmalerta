@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RepurchasesRouteImport } from './routes/repurchases'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as InactiveRouteImport } from './routes/inactive'
 import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as CampaignsRouteImport } from './routes/campaigns'
@@ -24,6 +25,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const RepurchasesRoute = RepurchasesRouteImport.update({
   id: '/repurchases',
   path: '/repurchases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InactiveRoute = InactiveRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
+  '/login': typeof LoginRoute
   '/repurchases': typeof RepurchasesRoute
   '/settings': typeof SettingsRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
+  '/login': typeof LoginRoute
   '/repurchases': typeof RepurchasesRoute
   '/settings': typeof SettingsRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
+  '/login': typeof LoginRoute
   '/repurchases': typeof RepurchasesRoute
   '/settings': typeof SettingsRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/customers'
     | '/inactive'
+    | '/login'
     | '/repurchases'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/customers'
     | '/inactive'
+    | '/login'
     | '/repurchases'
     | '/settings'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/customers'
     | '/inactive'
+    | '/login'
     | '/repurchases'
     | '/settings'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   CampaignsRoute: typeof CampaignsRoute
   CustomersRoute: typeof CustomersRoute
   InactiveRoute: typeof InactiveRoute
+  LoginRoute: typeof LoginRoute
   RepurchasesRoute: typeof RepurchasesRoute
   SettingsRoute: typeof SettingsRoute
 }
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/repurchases'
       fullPath: '/repurchases'
       preLoaderRoute: typeof RepurchasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inactive': {
@@ -160,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   CampaignsRoute: CampaignsRoute,
   CustomersRoute: CustomersRoute,
   InactiveRoute: InactiveRoute,
+  LoginRoute: LoginRoute,
   RepurchasesRoute: RepurchasesRoute,
   SettingsRoute: SettingsRoute,
 }
