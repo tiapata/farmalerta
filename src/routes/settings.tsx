@@ -7,16 +7,82 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode } from "lucide-react";
+import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { usePharmacy } from "@/hooks/use-pharmacy";
+import { useProfiles } from "@/hooks/use-profiles";
+import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const handleSave = () => {
-    toast.success("Configurações salvas com sucesso!");
+  const { pharmacy, loading: loadingPharmacy, updatePharmacy } = usePharmacy();
+  const { profiles, loading: loadingProfiles, refresh: refreshProfiles } = useProfiles();
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    cnpj: "",
+    email: "",
+    phone: "",
+    whatsapp: ""
+  });
+
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    full_name: "",
+    email: "",
+    role: "user"
+  });
+
+  useEffect(() => {
+    if (pharmacy) {
+      setFormData({
+        name: pharmacy.name || "",
+        cnpj: pharmacy.cnpj || "",
+        email: pharmacy.email || "",
+        phone: pharmacy.phone || "",
+        whatsapp: pharmacy.whatsapp || ""
+      });
+    }
+  }, [pharmacy]);
+
+  const handleSave = async () => {
+    await updatePharmacy(formData);
+  };
+
+  const handleAddUser = async () => {
+    try {
+      if (!newUser.full_name || !newUser.email) {
+        toast.error("Preencha todos os campos obrigatórios");
+        return;
+      }
+
+      // Since we don't have a backend to create Auth users, we'll just insert into profiles for now
+      // This is for demonstration, normally this would be an Edge Function or specialized hook
+      const { data, error } = await supabase
+        .from("profiles")
+        .insert([{
+          id: crypto.randomUUID(), // Mock ID for demonstration
+          full_name: newUser.full_name,
+          role: newUser.role,
+          pharmacy_id: pharmacy?.id
+        } as any]);
+
+      if (error) throw error;
+      
+      toast.success("Usuário cadastrado com sucesso!");
+      setIsUserDialogOpen(false);
+      setNewUser({ full_name: "", email: "", role: "user" });
+      refreshProfiles();
+    } catch (error: any) {
+      console.error("Error adding user:", error);
+      toast.error("Erro ao cadastrar usuário");
+    }
   };
 
   return (
@@ -60,28 +126,52 @@ function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="farmacia-nome">Nome da Farmácia</Label>
-                  <Input id="farmacia-nome" defaultValue="Farmácia Central" />
+                  <Input 
+                    id="farmacia-nome" 
+                    value={formData.name} 
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cnpj">CNPJ</Label>
-                  <Input id="cnpj" defaultValue="00.000.000/0001-00" placeholder="00.000.000/0000-00" />
+                  <Input 
+                    id="cnpj" 
+                    value={formData.cnpj} 
+                    onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+                    placeholder="00.000.000/0001-00" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">E-mail Comercial</Label>
-                  <Input id="email" type="email" defaultValue="contato@farmaciacentral.com.br" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={formData.email} 
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="telefone">Telefone Comercial</Label>
-                  <Input id="telefone" defaultValue="(11) 4002-8922" placeholder="(00) 0000-0000" />
+                  <Input 
+                    id="telefone" 
+                    value={formData.phone} 
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="(00) 0000-0000" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp">WhatsApp Business</Label>
-                  <Input id="whatsapp" defaultValue="(11) 98888-7777" placeholder="(00) 00000-0000" />
+                  <Input 
+                    id="whatsapp" 
+                    value={formData.whatsapp} 
+                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    placeholder="(00) 00000-0000" 
+                  />
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button onClick={handleSave} className="gap-2">
-                  <Save className="w-4 h-4" />
+                <Button onClick={handleSave} className="gap-2" disabled={loadingPharmacy}>
+                  {loadingPharmacy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Salvar alterações
                 </Button>
               </div>
@@ -185,10 +275,61 @@ function SettingsPage() {
                   Gerencie quem tem acesso ao painel da sua farmácia.
                 </CardDescription>
               </div>
-              <Button className="gap-2">
-                <Plus className="w-4 h-4" />
-                Novo Usuário
-              </Button>
+              <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Novo Usuário
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Novo Usuário</DialogTitle>
+                    <DialogDescription>
+                      Cadastre um novo membro para sua equipe.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="user-name">Nome Completo</Label>
+                      <Input 
+                        id="user-name" 
+                        value={newUser.full_name}
+                        onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
+                        placeholder="Ex: João da Silva"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="user-email">E-mail</Label>
+                      <Input 
+                        id="user-email" 
+                        type="email"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        placeholder="email@exemplo.com"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="user-role">Perfil de Acesso</Label>
+                      <Select 
+                        value={newUser.role} 
+                        onValueChange={(val) => setNewUser({ ...newUser, role: val })}
+                      >
+                        <SelectTrigger id="user-role">
+                          <SelectValue placeholder="Selecione um perfil" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Administrador</SelectItem>
+                          <SelectItem value="user">Usuário</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleAddUser} className="w-full">Cadastrar Usuário</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardHeader>
             <CardContent>
               <Table>
@@ -202,32 +343,35 @@ function SettingsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">João Silva</TableCell>
-                    <TableCell>joao@farmacia.com.br</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">Administrador</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">Editar</Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Maria Oliveira</TableCell>
-                    <TableCell>maria@farmacia.com.br</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">Usuário</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">Editar</Button>
-                    </TableCell>
-                  </TableRow>
+                  {loadingProfiles ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ) : profiles.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        Nenhum usuário cadastrado.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    profiles.map((profile) => (
+                      <TableRow key={profile.id}>
+                        <TableCell className="font-medium">{profile.full_name || "Sem nome"}</TableCell>
+                        <TableCell>{profile.email || "---"}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{profile.role === "admin" ? "Administrador" : "Usuário"}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm">Editar</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

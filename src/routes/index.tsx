@@ -12,19 +12,23 @@ import {
   ArrowUpRight,
   Search,
   Bell,
-  Filter
+  Filter,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { usePharmacy } from "@/hooks/use-pharmacy";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
 });
 
 function Dashboard() {
+  const { pharmacy, loading } = usePharmacy();
   const stats = [
     { title: "Receita Recuperável", value: "R$ 12.450", trend: "+12.5%", description: "Potencial de inativos", icon: TrendingUp, color: "text-green-600", bg: "bg-green-100" },
     { title: "Clientes em Risco", value: "24", trend: "-2", description: "30+ dias sem compra", icon: UserMinus, color: "text-orange-600", bg: "bg-orange-100" },
@@ -47,8 +51,8 @@ function Dashboard() {
             <Badge variant="secondary" className="bg-primary/10 text-primary border-none font-medium">Dashboard v2.0</Badge>
             <span className="text-xs text-muted-foreground">• Atualizado agora</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground/90">
-            Olá, <span className="text-primary">Farmácia Central</span> 👋
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground/90">
+            Olá, <span className="text-primary">{loading ? "..." : (pharmacy?.name || "Farmácia")}</span> 👋
           </h1>
           <p className="text-muted-foreground text-lg">
             Você tem <span className="text-foreground font-semibold">12 ações prioritárias</span> para hoje.
@@ -80,7 +84,7 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-xl md:text-2xl font-bold">{stat.value}</div>
                 <div className="text-[10px] font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded-md flex items-center">
                   <ArrowUpRight className="h-3 w-3 mr-0.5" />
                   {stat.trend}
@@ -212,7 +216,4 @@ function Dashboard() {
   );
 }
 
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
