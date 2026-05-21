@@ -201,51 +201,72 @@ function Customers() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {customers.map((customer) => (
-                  <tr key={customer.id} className="group hover:bg-muted/30 transition-colors">
-                    <td className="px-6 py-4 align-middle">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
-                          <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{customer.initials}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-foreground/90">{customer.name}</span>
-                          <span className="text-[10px] text-muted-foreground">{customer.phone}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 align-middle">{getStatusBadge(customer.status)}</td>
-                    <td className="px-6 py-4 align-middle">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <History className="h-3 w-3" />
-                        <span>{customer.lastBuy}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 align-middle font-bold text-foreground/80">{customer.ticket}</td>
-                    <td className="px-6 py-4 align-middle">
-                       <Badge variant="secondary" className="font-medium bg-muted text-muted-foreground border-none rounded-lg text-[10px]">{customer.frequency}</Badge>
-                    </td>
-                    <td className="px-6 py-4 align-middle text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl text-green-600 hover:bg-green-50">
-                          <MessageCircle className="h-4 w-4" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="rounded-xl">
-                            <DropdownMenuItem className="gap-2"><Users className="h-4 w-4" /> Perfil Completo</DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2"><History className="h-4 w-4" /> Histórico de Compras</DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-destructive"><UserMinus className="h-4 w-4" /> Desativar Cliente</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                     </td>
                   </tr>
-                ))}
+                ) : customers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
+                      Nenhum cliente encontrado.
+                    </td>
+                  </tr>
+                ) : (
+                  customers.map((customer) => {
+                    const initials = customer.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                    return (
+                      <tr key={customer.id} className="group hover:bg-muted/30 transition-colors">
+                        <td className="px-6 py-4 align-middle">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
+                              <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{initials}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-foreground/90">{customer.name}</span>
+                              <span className="text-[10px] text-muted-foreground">{customer.phone}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-middle">{getStatusBadge(customer.status || "Ativo")}</td>
+                        <td className="px-6 py-4 align-middle">
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <History className="h-3 w-3" />
+                            <span>{customer.last_purchase_at ? new Date(customer.last_purchase_at).toLocaleDateString() : '---'}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-middle font-bold text-foreground/80">
+                          {customer.total_spent ? `R$ ${customer.total_spent.toFixed(2)}` : 'R$ 0,00'}
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                           <Badge variant="secondary" className="font-medium bg-muted text-muted-foreground border-none rounded-lg text-[10px]">
+                             {customer.orders_count || 0} pedidos
+                           </Badge>
+                        </td>
+                        <td className="px-6 py-4 align-middle text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl text-green-600 hover:bg-green-50">
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="rounded-xl">
+                                <DropdownMenuItem className="gap-2"><Users className="h-4 w-4" /> Perfil Completo</DropdownMenuItem>
+                                <DropdownMenuItem className="gap-2"><History className="h-4 w-4" /> Histórico de Compras</DropdownMenuItem>
+                                <DropdownMenuItem className="gap-2 text-destructive"><UserMinus className="h-4 w-4" /> Desativar Cliente</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
