@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,18 @@ function LoginPage() {
   const [fullName, setFullName] = useState("");
   const [view, setView] = useState<"login" | "signup" | "forgot-password">("login");
   const navigate = useNavigate();
+
+  // Handle potential auth confirmation tokens in the URL
+  useEffect(() => {
+    const handleAuthChange = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        toast.success("E-mail confirmado com sucesso! Bem-vindo.");
+        navigate({ to: "/" });
+      }
+    };
+    handleAuthChange();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +62,7 @@ function LoginPage() {
           data: {
             full_name: fullName,
           },
+          emailRedirectTo: `${window.location.origin}/login`,
         },
       });
       if (error) throw error;
