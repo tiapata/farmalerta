@@ -52,7 +52,8 @@ function RootComponent() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (!session && location.pathname !== "/login") {
+      const isPublicPath = ["/login", "/auth-confirmation"].includes(location.pathname);
+      if (!session && !isPublicPath) {
         navigate({ to: "/login" });
       }
     });
@@ -62,7 +63,8 @@ function RootComponent() {
 
   // Redirect if not logged in and not on login page
   useEffect(() => {
-    if (!loading && !session && location.pathname !== "/login") {
+    const isPublicPath = ["/login", "/auth-confirmation"].includes(location.pathname);
+    if (!loading && !session && !isPublicPath) {
       navigate({ to: "/login" });
     }
   }, [loading, session, location.pathname, navigate]);
@@ -76,7 +78,7 @@ function RootComponent() {
   }
 
   // If on login page, just show the outlet
-  if (location.pathname === "/login") {
+  if (["/login", "/auth-confirmation"].includes(location.pathname)) {
     return (
       <>
         <HeadContent />
