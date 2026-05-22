@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as InactiveRouteImport } from './routes/inactive'
 import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as CampaignsRouteImport } from './routes/campaigns'
+import { Route as AuthConfirmationRouteImport } from './routes/auth-confirmation'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -47,6 +48,11 @@ const CampaignsRoute = CampaignsRouteImport.update({
   path: '/campaigns',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthConfirmationRoute = AuthConfirmationRouteImport.update({
+  id: '/auth-confirmation',
+  path: '/auth-confirmation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth-confirmation': typeof AuthConfirmationRoute
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth-confirmation': typeof AuthConfirmationRoute
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth-confirmation': typeof AuthConfirmationRoute
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth-confirmation'
     | '/campaigns'
     | '/customers'
     | '/inactive'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth-confirmation'
     | '/campaigns'
     | '/customers'
     | '/inactive'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth-confirmation'
     | '/campaigns'
     | '/customers'
     | '/inactive'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthConfirmationRoute: typeof AuthConfirmationRoute
   CampaignsRoute: typeof CampaignsRoute
   CustomersRoute: typeof CustomersRoute
   InactiveRoute: typeof InactiveRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampaignsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth-confirmation': {
+      id: '/auth-confirmation'
+      path: '/auth-confirmation'
+      fullPath: '/auth-confirmation'
+      preLoaderRoute: typeof AuthConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthConfirmationRoute: AuthConfirmationRoute,
   CampaignsRoute: CampaignsRoute,
   CustomersRoute: CustomersRoute,
   InactiveRoute: InactiveRoute,

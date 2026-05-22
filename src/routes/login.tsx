@@ -62,7 +62,7 @@ function LoginPage() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: `${window.location.origin}/auth-confirmation`,
         },
       });
       if (error) throw error;
