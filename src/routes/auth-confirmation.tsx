@@ -14,18 +14,33 @@ function AuthConfirmationPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+    // Escuta mudanças na autenticação para capturar o login assim que o token for processado
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" || session) {
         toast.success("Login automático realizado com sucesso!");
-        // We wait a bit so the user can see the success page
         const timer = setTimeout(() => {
           navigate({ to: "/" });
         }, 3000);
         return () => clearTimeout(timer);
       }
+    });
+
+    // Verificação inicial caso a sessão já tenha sido carregada
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        toast.success("Bem-vindo de volta!");
+        const timer = setTimeout(() => {
+          navigate({ to: "/" });
+        }, 2000);
+        return () => clearTimeout(timer);
+      }
     };
     checkSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
