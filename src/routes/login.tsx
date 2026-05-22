@@ -61,8 +61,8 @@ function LoginPage() {
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
       }
     } catch (error: any) {
-      console.error("Signup error:", error);
-      toast.error(error.message || "Erro ao cadastrar");
+      console.error("Detailed Signup Error:", error);
+      toast.error(error.message || "Erro ao cadastrar. Verifique se o e-mail já existe.");
     } finally {
       setLoading(false);
     }
