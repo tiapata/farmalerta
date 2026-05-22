@@ -1,13 +1,33 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth-confirmation")({
   component: AuthConfirmationPage,
 });
 
 function AuthConfirmationPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        toast.success("Login automático realizado com sucesso!");
+        // We wait a bit so the user can see the success page
+        const timer = setTimeout(() => {
+          navigate({ to: "/" });
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md border-none shadow-2xl text-center">
