@@ -18,6 +18,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [view, setView] = useState<"login" | "signup" | "forgot-password">("login");
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -53,13 +54,32 @@ function LoginPage() {
       });
       if (error) throw error;
       
-      toast.success("Conta criada! Verifique seu e-mail ou faça login.");
-      // Se o auto-confirm estiver ativado no Supabase, podemos navegar direto
       if (data.session) {
+        toast.success("Conta criada com sucesso!");
         navigate({ to: "/" });
+      } else {
+        toast.success("Conta criada! Verifique seu e-mail para confirmar.");
       }
     } catch (error: any) {
+      console.error("Signup error:", error);
       toast.error(error.message || "Erro ao cadastrar");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
+      if (error) throw error;
+      toast.success("E-mail de recuperação enviado!");
+      setView("login");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao enviar e-mail");
     } finally {
       setLoading(false);
     }
@@ -76,88 +96,126 @@ function LoginPage() {
           </div>
           <CardTitle className="text-2xl font-bold">FarmAlerta</CardTitle>
           <CardDescription>
-            Acesse o painel de controle da sua farmácia
+            {view === "forgot-password" 
+              ? "Recupere o acesso à sua conta" 
+              : "Acesse o painel de controle da sua farmácia"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Cadastrar</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="exemplo@farmacia.com" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Senha</Label>
+          {view === "forgot-password" ? (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">E-mail</Label>
+                <Input 
+                  id="reset-email" 
+                  type="email" 
+                  placeholder="exemplo@farmacia.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Enviar E-mail de Recuperação
+              </Button>
+              <Button 
+                type="button" 
+                variant="ghost" 
+                className="w-full" 
+                onClick={() => setView("login")}
+              >
+                Voltar para o Login
+              </Button>
+            </form>
+          ) : (
+            <Tabs value={view} onValueChange={(v) => setView(v as "login" | "signup")} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="login">Entrar</TabsTrigger>
+                <TabsTrigger value="signup">Cadastrar</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="exemplo@farmacia.com" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required 
+                    />
                   </div>
-                  <Input 
-                    id="password" 
-                    type="password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required 
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Entrar no Sistema
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Nome Completo</Label>
-                  <Input 
-                    id="signup-name" 
-                    placeholder="João da Silva" 
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">E-mail</Label>
-                  <Input 
-                    id="signup-email" 
-                    type="email" 
-                    placeholder="exemplo@farmacia.com" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Senha</Label>
-                  <Input 
-                    id="signup-password" 
-                    type="password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required 
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Criar Conta
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Senha</Label>
+                      <Button 
+                        type="button" 
+                        variant="link" 
+                        className="px-0 font-normal h-auto text-xs"
+                        onClick={() => setView("forgot-password")}
+                      >
+                        Esqueci minha senha
+                      </Button>
+                    </div>
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required 
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Entrar no Sistema
+                  </Button>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="signup">
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-name">Nome Completo</Label>
+                    <Input 
+                      id="signup-name" 
+                      placeholder="João da Silva" 
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">E-mail</Label>
+                    <Input 
+                      id="signup-email" 
+                      type="email" 
+                      placeholder="exemplo@farmacia.com" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Senha</Label>
+                    <Input 
+                      id="signup-password" 
+                      type="password" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required 
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Criar Conta
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          )}
         </CardContent>
         <CardFooter className="text-center text-xs text-muted-foreground">
           Ao acessar, você concorda com nossos termos de serviço.
