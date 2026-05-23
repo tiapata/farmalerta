@@ -76,7 +76,7 @@ function InactiveCustomers() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Taxa de Churn</CardTitle>
+            <CardTitle className="text-sm font-medium">Taxa de Perda (Churn)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-500">12.4%</div>
