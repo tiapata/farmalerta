@@ -77,7 +77,7 @@ function Customers() {
         (customer.cpf && customer.cpf.includes(searchTerm)) ||
         (customer.email && customer.email.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      const matchesStatus = statusFilter === "all" || customer.status === statusFilter;
+      const matchesStatus = statusFilter === "all" || (customer.status && customer.status.toLowerCase() === statusFilter.toLowerCase());
       
       return matchesSearch && matchesStatus;
     });
@@ -199,7 +199,7 @@ function Customers() {
                   <SelectItem value="Inativo">Inativo</SelectItem>
                   <SelectItem value="Recuperável">Recuperável</SelectItem>
                   <SelectItem value="VIP">VIP</SelectItem>
-                  <SelectItem value="Em risco">Em Risco</SelectItem>
+                  <SelectItem value="Em risco">Em risco</SelectItem>
                 </SelectContent>
               </Select>
             </div>
