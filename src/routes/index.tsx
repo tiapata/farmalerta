@@ -22,7 +22,10 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePharmacy } from "@/hooks/use-pharmacy";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomers } from "@/hooks/use-customers";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -32,22 +35,81 @@ export const Route = createFileRoute("/")({
 function Dashboard() {
   const { pharmacy, loading: pharmacyLoading } = usePharmacy();
   const { userName, loading: authLoading } = useAuth();
+  const { customers, loading: customersLoading } = useCustomers();
   
-  const loading = pharmacyLoading || authLoading;
+  const loading = pharmacyLoading || authLoading || customersLoading;
 
-  const stats = [
-    { title: "Receita Recuperável", value: "R$ 12.450", trend: "+12.5%", description: "Potencial de inativos", icon: TrendingUp, color: "text-green-600", bg: "bg-green-100" },
-    { title: "Clientes em Risco", value: "24", trend: "-2", description: "30+ dias sem compra", icon: UserMinus, color: "text-orange-600", bg: "bg-orange-100" },
-    { title: "Recompras Previstas", value: "18", trend: "+4 hoje", description: "Próximos 3 dias", icon: Calendar, color: "text-blue-600", bg: "bg-blue-100" },
-    { title: "Clientes VIP", value: "42", trend: "Top 5%", description: "Clientes recorrentes", icon: Star, color: "text-yellow-600", bg: "bg-yellow-100" },
-  ];
+  // Cálculos baseados nos dados reais
+  const statsReal = useMemo(() => {
+    const active = customers.filter(c => c.status === "Ativo");
+    const atRisk = customers.filter(c => c.status === "Recuperável");
+    const vip = customers.filter(c => c.vip_level === "Ouro");
+    
+    const totalPotential = customers
+      .filter(c => c.status !== "Ativo")
+      .reduce((acc, c) => acc + (c.total_spent || 0) / (c.orders_count || 1), 0);
 
-  const actionsToday = [
-    { name: "Maria Oliveira", reason: "Tratamento acabando (Losartana)", priority: "Alta", status: "Recompra", initials: "MO", lastVisit: "Há 28 dias" },
-    { name: "João Santos", reason: "Cliente VIP inativo há 15 dias", priority: "Média", status: "VIP", initials: "JS", lastVisit: "Há 15 dias" },
-    { name: "Ana Costa", reason: "Previsão de recompra amanhã", priority: "Baixa", status: "Recompra", initials: "AC", lastVisit: "Há 29 dias" },
-    { name: "Carlos Pereira", reason: "Cliente recuperável (60 dias)", priority: "Alta", status: "Recuperação", initials: "CP", lastVisit: "Há 62 dias" },
-  ];
+    return [
+      { 
+        title: "Receita Recuperável", 
+        value: `R$ ${totalPotential.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`, 
+        trend: "+12.5%", 
+        description: "Potencial de inativos", 
+        icon: TrendingUp, 
+        color: "text-green-600", 
+        bg: "bg-green-100" 
+      },
+      { 
+        title: "Clientes em Risco", 
+        value: atRisk.length.toString(), 
+        trend: "-2", 
+        description: "30+ dias sem compra", 
+        icon: UserMinus, 
+        color: "text-orange-600", 
+        bg: "bg-orange-100" 
+      },
+      { 
+        title: "Total de Clientes", 
+        value: customers.length.toString(), 
+        trend: "+4 hoje", 
+        description: "Base cadastrada", 
+        icon: Users, 
+        color: "text-blue-600", 
+        bg: "bg-blue-100" 
+      },
+      { 
+        title: "Clientes VIP", 
+        value: vip.length.toString(), 
+        trend: "Top 5%", 
+        description: "Clientes recorrentes", 
+        icon: Star, 
+        color: "text-yellow-600", 
+        bg: "bg-yellow-100" 
+      },
+    ];
+  }, [customers]);
+
+  const actionsToday = useMemo(() => {
+    return customers
+      .filter(c => c.status === "Recuperável" || c.status === "Inativo")
+      .slice(0, 4)
+      .map(c => ({
+        id: c.id,
+        name: c.name,
+        reason: c.status === "Recuperável" ? "Recuperação prioritária" : "Cliente inativo há tempos",
+        priority: c.vip_level === "Ouro" ? "Alta" : "Média",
+        initials: c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+        lastVisit: c.last_purchase_at ? `Há ${Math.ceil(Math.abs(new Date().getTime() - new Date(c.last_purchase_at).getTime()) / (1000 * 60 * 60 * 24))} dias` : 'Nunca'
+      }));
+  }, [customers]);
+
+  const handleAction = (name: string) => {
+    toast.info(`Abrindo detalhes para ação com ${name}`);
+  };
+
+  const handleSendMessage = (title: string) => {
+    toast.success(`Mensagem "${title}" enviada com sucesso!`);
+  };
 
   return (
     <div className="flex flex-col gap-8 md:gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -62,7 +124,7 @@ function Dashboard() {
           </h1>
 
           <p className="text-muted-foreground text-lg">
-            Você tem <span className="text-foreground font-semibold">12 ações prioritárias</span> para hoje.
+            Você tem <span className="text-foreground font-semibold">{actionsToday.length} ações prioritárias</span> para hoje.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -74,14 +136,16 @@ function Dashboard() {
             <Bell className="h-5 w-5 text-muted-foreground" />
             <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full border-2 border-background" />
           </Button>
-          <Button className="rounded-xl shadow-lg shadow-primary/20 gap-2 px-5">
-            <Plus className="h-4 w-4" /> Novo Atendimento
+          <Button className="rounded-xl shadow-lg shadow-primary/20 gap-2 px-5" asChild>
+            <Link to="/customers">
+              <Plus className="h-4 w-4" /> Novo Atendimento
+            </Link>
           </Button>
         </div>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, i) => (
+        {statsReal.map((stat, i) => (
           <Card key={i} className="border-none shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
@@ -124,48 +188,69 @@ function Dashboard() {
                   <tr className="border-b bg-muted/10">
                     <th className="h-12 px-6 text-left align-middle font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Cliente</th>
                     <th className="h-12 px-6 text-left align-middle font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Motivo da Ação</th>
-                    <th className="h-12 px-6 text-left align-middle font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Status</th>
+                    <th className="h-12 px-6 text-left align-middle font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Prioridade</th>
                     <th className="h-12 px-6 text-right align-middle font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Ação</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {actionsToday.map((action, i) => (
-                    <tr key={i} className="group hover:bg-muted/30 transition-colors">
-                      <td className="px-6 py-4 align-middle">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{action.initials}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-foreground/90">{action.name}</span>
-                            <span className="text-[10px] text-muted-foreground">{action.lastVisit}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 align-middle">
-                        <span className="text-muted-foreground font-medium">{action.reason}</span>
-                      </td>
-                      <td className="px-6 py-4 align-middle">
-                        <Badge 
-                          className="rounded-lg px-2.5 py-0.5 border-none font-semibold text-[10px]"
-                          variant={action.priority === "Alta" ? "destructive" : action.priority === "Média" ? "secondary" : "outline"}
-                        >
-                          {action.priority}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 align-middle text-right">
-                        <Button size="icon" variant="ghost" className="rounded-xl group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-12 text-center">
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                       </td>
                     </tr>
-                  ))}
+                  ) : actionsToday.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
+                        Nenhuma ação prioritária para hoje.
+                      </td>
+                    </tr>
+                  ) : (
+                    actionsToday.map((action, i) => (
+                      <tr key={i} className="group hover:bg-muted/30 transition-colors">
+                        <td className="px-6 py-4 align-middle">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
+                              <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{action.initials}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-foreground/90">{action.name}</span>
+                              <span className="text-[10px] text-muted-foreground">{action.lastVisit}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                          <span className="text-muted-foreground font-medium">{action.reason}</span>
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                          <Badge 
+                            className="rounded-lg px-2.5 py-0.5 border-none font-semibold text-[10px]"
+                            variant={action.priority === "Alta" ? "destructive" : action.priority === "Média" ? "secondary" : "outline"}
+                          >
+                            {action.priority}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 align-middle text-right">
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="rounded-xl group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                            onClick={() => handleAction(action.name)}
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
             <div className="p-4 border-t bg-muted/5 text-center">
-              <Button variant="link" className="text-primary font-semibold text-xs h-auto p-0">
-                Ver todos os clientes (142)
+              <Button variant="link" className="text-primary font-semibold text-xs h-auto p-0" asChild>
+                <Link to="/customers">
+                  Ver todos os clientes ({customers.length})
+                </Link>
               </Button>
             </div>
           </CardContent>
@@ -193,12 +278,17 @@ function Dashboard() {
                   <p className="text-sm font-bold leading-tight">{msg.title}</p>
                   <p className="text-[11px] text-muted-foreground">{msg.user} • {msg.time}</p>
                 </div>
-                <Button size="sm" variant="outline" className="rounded-lg border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="rounded-lg border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
+                  onClick={() => handleSendMessage(msg.title)}
+                >
                   Enviar
                 </Button>
               </div>
             ))}
-            <Button className="w-full mt-2 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 font-bold">
+            <Button className="w-full mt-2 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 font-bold" asChild>
               <Link to="/campaigns">
                 Ir para Campanhas
               </Link>
@@ -222,5 +312,3 @@ function Dashboard() {
     </div>
   );
 }
-
-

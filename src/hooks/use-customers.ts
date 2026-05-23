@@ -32,7 +32,6 @@ export function useCustomers() {
       setCustomers(data || []);
     } catch (error: any) {
       console.error("Error fetching customers:", error);
-      // toast.error("Erro ao carregar clientes");
     } finally {
       setLoading(false);
     }
@@ -40,7 +39,6 @@ export function useCustomers() {
 
   const addCustomer = async (customer: { name: string, phone: string } & Partial<Customer>) => {
     try {
-      // Busca a farmácia disponível
       const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
       
       if (!pharmacy) {
@@ -50,7 +48,7 @@ export function useCustomers() {
 
       const { data, error } = await supabase
         .from("customers")
-        .insert([{ ...customer, pharmacy_id: pharmacy.id } as any])
+        .insert([{ ...customer, pharmacy_id: pharmacy.id, status: customer.status || 'Ativo' } as any])
         .select()
         .single();
 
@@ -66,9 +64,56 @@ export function useCustomers() {
     }
   };
 
+  const seedData = async () => {
+    try {
+      setLoading(true);
+      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
+      
+      let pharmacyId = pharmacy?.id;
+      
+      if (!pharmacyId) {
+        const { data: newPharmacy, error: pError } = await supabase
+          .from("pharmacies")
+          .insert([{ name: "Farmácia Central" }])
+          .select()
+          .single();
+        if (pError) throw pError;
+        pharmacyId = newPharmacy.id;
+      }
+
+      const dummyCustomers = [
+        { name: 'Zaqueu Fernandes', phone: '(11) 98765-4321', status: 'Ativo', vip_level: 'Ouro', total_spent: 2500, orders_count: 15, last_purchase_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Maria Oliveira', phone: '(11) 97765-4322', status: 'Ativo', vip_level: 'Prata', total_spent: 850, orders_count: 5, last_purchase_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'João Santos', phone: '(11) 96665-4323', status: 'Ativo', vip_level: 'Bronze', total_spent: 120, orders_count: 2, last_purchase_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Ana Costa', phone: '(11) 95565-4324', status: 'Ativo', vip_level: 'Prata', total_spent: 540, orders_count: 4, last_purchase_at: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Carlos Pereira', phone: '(11) 94465-4325', status: 'Inativo', vip_level: 'Bronze', total_spent: 310, orders_count: 3, last_purchase_at: new Date(Date.now() - 62 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Sérgio Mendes', phone: '(11) 93365-4326', status: 'Recuperável', vip_level: 'Bronze', total_spent: 450, orders_count: 4, last_purchase_at: new Date(Date.now() - 32 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Marta Rocha', phone: '(11) 92265-4327', status: 'Recuperável', vip_level: 'Ouro', total_spent: 1200, orders_count: 12, last_purchase_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Paulo Amaral', phone: '(11) 91165-4328', status: 'Inativo', vip_level: 'Prata', total_spent: 210, orders_count: 2, last_purchase_at: new Date(Date.now() - 62 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Júlia Ferreira', phone: '(11) 90065-4329', status: 'Inativo', vip_level: 'Ouro', total_spent: 890, orders_count: 6, last_purchase_at: new Date(Date.now() - 68 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Fernando Costa', phone: '(11) 89965-4330', status: 'Inativo', vip_level: 'Ouro', total_spent: 3400, orders_count: 20, last_purchase_at: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Helena Matos', phone: '(11) 88865-4331', status: 'Inativo', vip_level: 'Bronze', total_spent: 120, orders_count: 1, last_purchase_at: new Date(Date.now() - 95 * 24 * 60 * 60 * 1000).toISOString() }
+      ];
+
+      const { error } = await supabase
+        .from("customers")
+        .insert(dummyCustomers.map(c => ({ ...c, pharmacy_id: pharmacyId })));
+
+      if (error) throw error;
+      
+      toast.success("Banco de dados populado com sucesso!");
+      await fetchCustomers();
+    } catch (error: any) {
+      console.error("Error seeding data:", error);
+      toast.error("Erro ao popular dados: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCustomers();
   }, []);
 
-  return { customers, loading, addCustomer, refresh: fetchCustomers };
+  return { customers, loading, addCustomer, seedData, refresh: fetchCustomers };
 }

@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode, Loader2 } from "lucide-react";
+import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode, Loader2, DatabaseZap } from "lucide-react";
 import { toast } from "sonner";
 import { usePharmacy } from "@/hooks/use-pharmacy";
 import { useProfiles } from "@/hooks/use-profiles";
+import { useCustomers } from "@/hooks/use-customers";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/settings")({
 function SettingsPage() {
   const { pharmacy, loading: loadingPharmacy, updatePharmacy } = usePharmacy();
   const { profiles, loading: loadingProfiles, refresh: refreshProfiles } = useProfiles();
+  const { seedData, loading: seeding } = useCustomers();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -95,7 +97,7 @@ function SettingsPage() {
       </div>
 
       <Tabs defaultValue="perfil" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
           <TabsTrigger value="perfil" className="gap-2">
             <Building2 className="w-4 h-4" />
             <span className="hidden sm:inline">Perfil</span>
@@ -111,6 +113,10 @@ function SettingsPage() {
           <TabsTrigger value="usuarios" className="gap-2">
             <Users className="w-4 h-4" />
             <span className="hidden sm:inline">Usuários</span>
+          </TabsTrigger>
+          <TabsTrigger value="database" className="gap-2">
+            <DatabaseZap className="w-4 h-4" />
+            <span className="hidden sm:inline">Dados</span>
           </TabsTrigger>
         </TabsList>
 
@@ -374,6 +380,35 @@ function SettingsPage() {
                   )}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="database" className="space-y-4 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Dados de Teste</CardTitle>
+              <CardDescription>
+                Popule seu banco de dados com informações fictícias para testar as funcionalidades do sistema.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col gap-4 p-4 border rounded-xl bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <DatabaseZap className="w-8 h-8 text-primary" />
+                  <div>
+                    <h3 className="font-bold">Popular Banco de Dados</h3>
+                    <p className="text-sm text-muted-foreground">Isso irá cadastrar clientes, vendas e eventos de exemplo.</p>
+                  </div>
+                </div>
+                <Button 
+                  onClick={seedData} 
+                  disabled={seeding}
+                  className="w-full sm:w-auto"
+                >
+                  {seeding ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <DatabaseZap className="w-4 h-4 mr-2" />}
+                  Gerar Dados de Teste agora
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
