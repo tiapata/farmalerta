@@ -124,39 +124,6 @@ function Repurchases() {
               </div>
             ) : (
               predictions.map((p) => (
-              <div key={p.id} className="flex flex-col gap-6 p-6 transition-all hover:bg-muted/30 md:flex-row md:items-center">
-                <div className="flex flex-1 items-center gap-4">
-                  <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold">{p.initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-lg text-foreground/90">{p.customer}</span>
-                    <div className="flex items-center gap-1 text-xs text-primary font-medium">
-                      <Pill className="h-3 w-3" />
-                      {p.medication}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex flex-1 flex-col gap-2">
-                  <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="text-muted-foreground uppercase tracking-tighter">Status do Estoque</span>
-                    <span className={cn(p.priority === "Alta" ? "text-destructive" : "text-primary")}>
-                      {p.progress}% utilizado
-                    </span>
-                  </div>
-                  <Progress value={p.progress} className={cn("h-2.5", p.priority === "Alta" ? "[&>div]:bg-destructive" : "")} />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      Acaba em <span className="text-foreground">{p.daysLeft} dias</span> ({p.date})
-                    </div>
-                    <Badge variant={p.priority === "Alta" ? "destructive" : p.priority === "Média" ? "secondary" : "outline"} className="text-[9px] rounded-lg">
-                      {p.priority}
-                    </Badge>
-                  </div>
-                </div>
-
                 <div key={p.id} className="flex flex-col gap-6 p-6 transition-all hover:bg-muted/30 md:flex-row md:items-center">
                   <div className="flex flex-1 items-center gap-4">
                     <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
