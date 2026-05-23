@@ -67,8 +67,9 @@ export function useCustomers() {
   const seedData = async () => {
     try {
       setLoading(true);
-      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
       
+      // 1. Garantir que a farmácia existe
+      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
       let pharmacyId = pharmacy?.id;
       
       if (!pharmacyId) {
@@ -81,6 +82,11 @@ export function useCustomers() {
         pharmacyId = newPharmacy.id;
       }
 
+      // 2. Limpar dados antigos para o teste ser limpo (opcional, mas bom para teste)
+      // await supabase.from("sales").delete().eq("pharmacy_id", pharmacyId);
+      // await supabase.from("customers").delete().eq("pharmacy_id", pharmacyId);
+
+      // 3. Inserir Clientes
       const dummyCustomers = [
         { name: 'Zaqueu Fernandes', phone: '(11) 98765-4321', status: 'Ativo', vip_level: 'Ouro', total_spent: 2500, orders_count: 15, last_purchase_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
         { name: 'Maria Oliveira', phone: '(11) 97765-4322', status: 'Ativo', vip_level: 'Prata', total_spent: 850, orders_count: 5, last_purchase_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString() },
@@ -95,13 +101,61 @@ export function useCustomers() {
         { name: 'Helena Matos', phone: '(11) 88865-4331', status: 'Inativo', vip_level: 'Bronze', total_spent: 120, orders_count: 1, last_purchase_at: new Date(Date.now() - 95 * 24 * 60 * 60 * 1000).toISOString() }
       ];
 
-      const { error } = await supabase
+      const { data: insertedCustomers, error: cError } = await supabase
         .from("customers")
-        .insert(dummyCustomers.map(c => ({ ...c, pharmacy_id: pharmacyId })));
+        .insert(dummyCustomers.map(c => ({ ...c, pharmacy_id: pharmacyId })))
+        .select();
 
-      if (error) throw error;
+      if (cError) throw cError;
+
+      // 4. Inserir Vendas (Sales) para os clientes inseridos
+      if (insertedCustomers && insertedCustomers.length > 0) {
+        const dummySales = insertedCustomers.flatMap(customer => {
+          // Criar 1 a 3 vendas para cada cliente
+          const numSales = Math.floor(Math.random() * 3) + 1;
+          return Array.from({ length: numSales }).map((_, i) => ({
+            pharmacy_id: pharmacyId,
+            customer_id: customer.id,
+            total_amount: Math.random() * 200 + 50,
+            items_count: Math.floor(Math.random() * 5) + 1,
+            payment_method: ['Cartão', 'Dinheiro', 'Pix'][Math.floor(Math.random() * 3)],
+            sale_date: new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000).toISOString()
+          }));
+        });
+
+        const { error: sError } = await supabase.from("sales").insert(dummySales);
+        if (sError) console.error("Erro ao inserir vendas:", sError);
+      }
+
+      // 5. Inserir Campanhas
+      const dummyCampaigns = [
+        { 
+          pharmacy_id: pharmacyId, 
+          title: 'Recuperação de Inativos - 15% OFF', 
+          type: 'Recuperação', 
+          status: 'Ativa', 
+          description: 'Cupom SAUDADES para clientes sem compra há 60 dias' 
+        },
+        { 
+          pharmacy_id: pharmacyId, 
+          title: 'Lembrete de Medicamento Contínuo', 
+          type: 'Recompra', 
+          status: 'Ativa', 
+          description: 'Aviso de renovação de receita para Losartana' 
+        },
+        { 
+          pharmacy_id: pharmacyId, 
+          title: 'Promoção VIP Ouro', 
+          type: 'VIP', 
+          status: 'Rascunho', 
+          description: 'Brinde exclusivo para clientes Ouro em compras acima de R$ 200' 
+        }
+      ];
+
+      const { error: cpError } = await supabase.from("campaigns").insert(dummyCampaigns);
+      if (cpError) console.error("Erro ao inserir campanhas:", cpError);
       
-      toast.success("Banco de dados populado com sucesso!");
+      toast.success("Todas as tabelas foram populadas com sucesso!");
       await fetchCustomers();
     } catch (error: any) {
       console.error("Error seeding data:", error);

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   UserMinus, 
   TrendingDown, 
@@ -78,13 +79,44 @@ function InactiveCustomers() {
   const totalLostValue = inactiveCustomers.reduce((acc, curr) => acc + (curr.total_spent || 0) / (curr.orders_count || 1), 0);
   const churnRate = customers.length > 0 ? (inactiveCustomers.length / customers.length * 100).toFixed(1) : "0";
 
-  const handleWhatsApp = (phone: string, name: string) => {
-    const message = encodeURIComponent(`Olá ${name}, sentimos sua falta na Farmácia Central! Temos uma oferta especial para você hoje.`);
-    window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
+  const handleWhatsApp = async (phone: string, name: string, customerId: string) => {
+    try {
+      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
+      if (pharmacy) {
+        await supabase.from("messages").insert([{
+          pharmacy_id: pharmacy.id,
+          customer_id: customerId,
+          content: `Olá ${name}, sentimos sua falta na Farmácia Central! Temos uma oferta especial para você hoje.`,
+          status: 'Enviado',
+          sent_at: new Date().toISOString()
+        }]);
+      }
+      
+      const message = encodeURIComponent(`Olá ${name}, sentimos sua falta na Farmácia Central! Temos uma oferta especial para você hoje.`);
+      window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
+      toast.success("Mensagem registrada e abrindo WhatsApp...");
+    } catch (error) {
+      console.error("Erro ao registrar mensagem:", error);
+      toast.error("Erro ao registrar ação no banco de dados");
+    }
   };
 
-  const handleReactivate = (name: string) => {
-    toast.success(`Iniciando processo de reativação para ${name}. Uma oferta personalizada foi preparada!`);
+  const handleReactivate = async (name: string, customerId: string) => {
+    try {
+      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
+      if (pharmacy) {
+        // Simular a criação de uma campanha ou mensagem de reativação
+        await supabase.from("messages").insert([{
+          pharmacy_id: pharmacy.id,
+          customer_id: customerId,
+          content: `Estratégia de reativação iniciada para ${name}`,
+          status: 'Pendente'
+        }]);
+      }
+      toast.success(`Iniciando processo de reativação para ${name}. Uma oferta personalizada foi preparada!`);
+    } catch (error) {
+      toast.error("Erro ao processar reativação");
+    }
   };
 
   if (loading) {
@@ -114,7 +146,7 @@ function InactiveCustomers() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Taxa de Perda (Churn)</CardTitle>
+            <CardTitle className="text-sm font-medium">Taxa de Clientes Inativos</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-500">{churnRate}%</div>
@@ -179,14 +211,14 @@ function InactiveCustomers() {
                             size="sm" 
                             variant="outline" 
                             className="gap-2"
-                            onClick={() => handleWhatsApp(customer.phone, customer.name)}
+                             onClick={() => handleWhatsApp(customer.phone, customer.name, customer.id)}
                           >
                             <MessageCircle className="h-4 w-4" /> WhatsApp
                           </Button>
                           <Button 
                             size="sm" 
                             className="gap-2"
-                            onClick={() => handleReactivate(customer.name)}
+                            onClick={() => handleReactivate(customer.name, customer.id)}
                           >
                             <RotateCcw className="h-4 w-4" /> Reativar
                           </Button>

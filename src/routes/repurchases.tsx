@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useCustomers } from "@/hooks/use-customers";
 import { 
   Calendar, 
   Search, 
@@ -10,7 +11,8 @@ import {
   ArrowUpRight,
   Stethoscope,
   Pill,
-  Timer
+  Timer,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,12 +26,37 @@ export const Route = createFileRoute("/repurchases")({
 });
 
 function Repurchases() {
-  const predictions = [
-    { id: 1, customer: "Maria Oliveira", medication: "Losartana 50mg", daysLeft: 2, progress: 90, date: "20/05/2026", priority: "Alta", initials: "MO" },
-    { id: 2, customer: "Antônio Ferreira", medication: "Metformina 850mg", daysLeft: 5, progress: 80, date: "23/05/2026", priority: "Média", initials: "AF" },
-    { id: 3, customer: "Lúcia Souza", medication: "Sinvastatina 20mg", daysLeft: 1, progress: 95, date: "19/05/2026", priority: "Alta", initials: "LS" },
-    { id: 4, customer: "Ricardo Lima", medication: "Atenolol 25mg", daysLeft: 12, progress: 60, date: "30/05/2026", priority: "Baixa", initials: "RL" },
-  ];
+  const { customers, loading } = useCustomers();
+
+  // Filtrar clientes que têm histórico e simular previsões
+  const predictions = customers
+    .filter(c => (c.orders_count || 0) > 0)
+    .slice(0, 10)
+    .map((c, i) => {
+      const daysSinceLast = c.last_purchase_at 
+        ? Math.ceil(Math.abs(new Date().getTime() - new Date(c.last_purchase_at).getTime()) / (1000 * 60 * 60 * 24))
+        : 30;
+      
+      const cycle = 30; // Assumindo ciclo de 30 dias para simplificar
+      const daysLeft = Math.max(0, cycle - (daysSinceLast % cycle));
+      const progress = Math.min(100, Math.round(((cycle - daysLeft) / cycle) * 100));
+      const priority = daysLeft <= 2 ? "Alta" : daysLeft <= 7 ? "Média" : "Baixa";
+      
+      const nextDate = new Date();
+      nextDate.setDate(nextDate.getDate() + daysLeft);
+
+      return {
+        id: c.id,
+        customer: c.name,
+        medication: i % 2 === 0 ? "Losartana 50mg" : "Metformina 850mg",
+        daysLeft,
+        progress,
+        date: nextDate.toLocaleDateString(),
+        priority,
+        initials: c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+      };
+    })
+    .sort((a, b) => a.daysLeft - b.daysLeft);
 
   return (
     <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
@@ -87,50 +114,60 @@ function Repurchases() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y">
-            {predictions.map((p) => (
-              <div key={p.id} className="flex flex-col gap-6 p-6 transition-all hover:bg-muted/30 md:flex-row md:items-center">
-                <div className="flex flex-1 items-center gap-4">
-                  <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold">{p.initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-lg text-foreground/90">{p.customer}</span>
-                    <div className="flex items-center gap-1 text-xs text-primary font-medium">
-                      <Pill className="h-3 w-3" />
-                      {p.medication}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex flex-1 flex-col gap-2">
-                  <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="text-muted-foreground uppercase tracking-tighter">Status do Estoque</span>
-                    <span className={cn(p.priority === "Alta" ? "text-destructive" : "text-primary")}>
-                      {p.progress}% utilizado
-                    </span>
-                  </div>
-                  <Progress value={p.progress} className={cn("h-2.5", p.priority === "Alta" ? "[&>div]:bg-destructive" : "")} />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      Acaba em <span className="text-foreground">{p.daysLeft} dias</span> ({p.date})
-                    </div>
-                    <Badge variant={p.priority === "Alta" ? "destructive" : p.priority === "Média" ? "secondary" : "outline"} className="text-[9px] rounded-lg">
-                      {p.priority}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 md:ml-4">
-                  <Button variant="outline" size="sm" className="rounded-xl gap-2 h-10 px-4 border-primary/20 text-primary hover:bg-primary/5">
-                    <MessageCircle className="h-4 w-4" /> Notificar
-                  </Button>
-                  <Button size="sm" className="rounded-xl gap-2 h-10 px-4 shadow-md shadow-primary/10">
-                    Registrar Recompra <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
+            {loading ? (
+              <div className="p-12 text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
               </div>
-            ))}
+            ) : predictions.length === 0 ? (
+              <div className="p-12 text-center text-muted-foreground">
+                Nenhum dado de recompra disponível. Popule o banco de dados primeiro.
+              </div>
+            ) : (
+              predictions.map((p) => (
+                <div key={p.id} className="flex flex-col gap-6 p-6 transition-all hover:bg-muted/30 md:flex-row md:items-center">
+                  <div className="flex flex-1 items-center gap-4">
+                    <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold">{p.initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-lg text-foreground/90">{p.customer}</span>
+                      <div className="flex items-center gap-1 text-xs text-primary font-medium">
+                        <Pill className="h-3 w-3" />
+                        {p.medication}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-1 flex-col gap-2">
+                    <div className="flex items-center justify-between text-xs font-semibold">
+                      <span className="text-muted-foreground uppercase tracking-tighter">Status do Estoque</span>
+                      <span className={cn(p.priority === "Alta" ? "text-destructive" : "text-primary")}>
+                        {p.progress}% utilizado
+                      </span>
+                    </div>
+                    <Progress value={p.progress} className={cn("h-2.5", p.priority === "Alta" ? "[&>div]:bg-destructive" : "")} />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        Acaba em <span className="text-foreground">{p.daysLeft} dias</span> ({p.date})
+                      </div>
+                      <Badge variant={p.priority === "Alta" ? "destructive" : p.priority === "Média" ? "secondary" : "outline"} className="text-[9px] rounded-lg">
+                        {p.priority}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 md:ml-4">
+                    <Button variant="outline" size="sm" className="rounded-xl gap-2 h-10 px-4 border-primary/20 text-primary hover:bg-primary/5">
+                      <MessageCircle className="h-4 w-4" /> Notificar
+                    </Button>
+                    <Button size="sm" className="rounded-xl gap-2 h-10 px-4 shadow-md shadow-primary/10">
+                      Registrar Recompra <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

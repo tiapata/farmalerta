@@ -10,19 +10,78 @@ export function useAuth() {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        ensureProfileExists(session.user.id);
+      }
       setLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        ensureProfileExists(session.user.id);
+      }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Usuário";
+  const ensureProfileExists = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!profile) {
+      // Get the first pharmacy or create one
+      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
+      let pharmacyId = pharmacy?.id;
+
+      if (!pharmacyId) {
+        const { data: newPharmacy } = await supabase
+          .from("pharmacies")
+          .insert([{ name: "Farmácia Central" }])
+          .select()
+          .single();
+        pharmacyId = newPharmacy?.id;
+      }
+
+      if (pharmacyId) {
+        await supabase.from("profiles").insert([
+          { 
+            id: userId, 
+            pharmacy_id: pharmacyId, 
+            full_name: user?.user_metadata?.full_name || "Zaqueu Fernandes" // Usando o nome sugerido pelo usuário como padrão
+          }
+        ]);
+        setProfileName(user?.user_metadata?.full_name || "Zaqueu Fernandes");
+      }
+    } else if (profile.full_name) {
+      setProfileName(profile.full_name);
+    }
+  };
+
+  const [profileName, setProfileName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.full_name) {
+            setProfileName(data.full_name);
+          }
+        });
+    }
+  }, [user]);
+
+  const userName = profileName || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Usuário";
 
   return { user, userName, loading };
 }
