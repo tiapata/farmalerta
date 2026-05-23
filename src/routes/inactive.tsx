@@ -21,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useCustomers } from "@/hooks/use-customers";
+import { usePharmacy } from "@/hooks/use-pharmacy";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inactive")({
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/inactive")({
 
 function InactiveCustomers() {
   const { customers, loading } = useCustomers();
+  const { pharmacy } = usePharmacy();
 
   // Filtrar clientes inativos ou recuperáveis
   const inactiveCustomers = customers.filter(c => c.status === "Inativo" || c.status === "Recuperável");
@@ -81,18 +83,20 @@ function InactiveCustomers() {
 
   const handleWhatsApp = async (phone: string, name: string, customerId: string) => {
     try {
-      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
-      if (pharmacy) {
+      const pharmacyName = pharmacy?.name || "Nossa Farmácia";
+      const messageContent = `Olá ${name}, sentimos sua falta na ${pharmacyName}! Temos uma oferta especial para você hoje.`;
+      
+      if (pharmacy?.id) {
         await supabase.from("messages").insert([{
           pharmacy_id: pharmacy.id,
           customer_id: customerId,
-          content: `Olá ${name}, sentimos sua falta na Farmácia Central! Temos uma oferta especial para você hoje.`,
+          content: messageContent,
           status: 'Enviado',
           sent_at: new Date().toISOString()
         }]);
       }
       
-      const message = encodeURIComponent(`Olá ${name}, sentimos sua falta na Farmácia Central! Temos uma oferta especial para você hoje.`);
+      const message = encodeURIComponent(messageContent);
       window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
       toast.success("Mensagem registrada e abrindo WhatsApp...");
     } catch (error) {
