@@ -35,7 +35,6 @@ function Repurchases() {
   // Filtrar clientes que têm histórico e simular previsões
   const predictions = customers
     .filter(c => (c.orders_count || 0) > 0)
-    .slice(0, 10)
     .map((c, i) => {
       const daysSinceLast = c.last_purchase_at 
         ? Math.ceil(Math.abs(new Date().getTime() - new Date(c.last_purchase_at).getTime()) / (1000 * 60 * 60 * 24))
@@ -55,25 +54,37 @@ function Repurchases() {
       const nextDate = new Date();
       nextDate.setDate(nextDate.getDate() + daysLeft);
 
+      // Mapeamento específico solicitado pelo usuário
+      let medication = "Losartana 50mg";
+      if (c.name === "Helena Matos") medication = "Losartana 50mg";
+      else if (c.name === "Carlos Pereira") {
+        medication = progress >= 90 ? "Metformina 850mg" : "Losartana 50mg";
+      } else if (c.name === "Fernando Costa") {
+        medication = progress >= 78 ? "Losartana 50mg" : "Metformina 850mg";
+      } else {
+        medication = i % 2 === 0 ? "Losartana 50mg" : "Metformina 850mg";
+      }
+
       return {
         id: c.id,
         customer: c.name,
         phone: c.phone,
-        medication: i % 2 === 0 ? "Losartana 50mg" : "Metformina 850mg",
+        medication,
         daysLeft,
         progress,
-        date: nextDate.toLocaleDateString(),
+        date: nextDate.toLocaleDateString('pt-BR'),
         priority,
         initials: c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
       };
     })
-    .sort((a, b) => a.daysLeft - b.daysLeft);
+    .filter(p => p.progress >= 75) // Apenas clientes com status igual ou superior a 75%
+    .sort((a, b) => b.progress - a.progress);
 
   const handleNotify = async (prediction: any) => {
     try {
       const pharmacyName = pharmacy?.name || "Nossa Farmácia";
       const messageText = prediction.daysLeft === 0
-        ? `Olá ${prediction.customer}, notamos que seu medicamento ${prediction.medication} acabou hoje. Gostaria de solicitar a recompra na ${pharmacyName}?`
+        ? `Olá ${prediction.customer}, notamos que seu medicamento ${prediction.medication} acabou hoje. Gostaria de solicitar a recompra na ${pharmacyName}? Podemos separar para você.`
         : `Olá ${prediction.customer}, seu medicamento ${prediction.medication} está chegando ao fim (restam ${prediction.daysLeft} dias). Gostaria de garantir sua próxima caixa na ${pharmacyName}?`;
 
       if (pharmacy?.id) {
