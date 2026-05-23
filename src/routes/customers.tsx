@@ -199,7 +199,7 @@ function Customers() {
                   <SelectItem value="Inativo">Inativo</SelectItem>
                   <SelectItem value="Recuperável">Recuperável</SelectItem>
                   <SelectItem value="VIP">VIP</SelectItem>
-                  <SelectItem value="Em risco">Em Risco</SelectItem>
+                  <SelectItem value="Em risco">Em risco</SelectItem>
                 </SelectContent>
               </Select>
             </div>
