@@ -88,14 +88,14 @@ export function useCustomers() {
 
       // 3. Inserir Clientes
       const dummyCustomers = [
-        { name: 'Zaqueu Fernandes', phone: '(11) 98765-4321', status: 'Ativo', vip_level: 'Ouro', total_spent: 2500, orders_count: 15, last_purchase_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() }, // 83% (Stock > 80%)
-        { name: 'Maria Oliveira', phone: '(11) 97765-4322', status: 'Ativo', vip_level: 'Prata', total_spent: 850, orders_count: 5, last_purchase_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString() }, // 93% (Stock > 90%)
-        { name: 'João Santos', phone: '(11) 96665-4323', status: 'Ativo', vip_level: 'Bronze', total_spent: 120, orders_count: 2, last_purchase_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
-        { name: 'Ana Costa', phone: '(11) 95565-4324', status: 'Ativo', vip_level: 'Prata', total_spent: 540, orders_count: 4, last_purchase_at: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString() }, // 96% (Stock > 90%)
-        { name: 'Roberto Silva', phone: '(11) 94444-5555', status: 'Ativo', vip_level: 'Ouro', total_spent: 3200, orders_count: 18, last_purchase_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() }, // Stock Zerado
-        { name: 'Lucia Santos', phone: '(11) 93333-4444', status: 'Ativo', vip_level: 'Prata', total_spent: 1100, orders_count: 8, last_purchase_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() }, // Stock Zerado
-        { name: 'Carlos Pereira', phone: '(11) 94465-4325', status: 'Inativo', vip_level: 'Bronze', total_spent: 310, orders_count: 3, last_purchase_at: new Date(Date.now() - 62 * 24 * 60 * 60 * 1000).toISOString() },
-        { name: 'Sérgio Mendes', phone: '(11) 93365-4326', status: 'Recuperável', vip_level: 'Bronze', total_spent: 450, orders_count: 4, last_purchase_at: new Date(Date.now() - 32 * 24 * 60 * 60 * 1000).toISOString() },
+        { name: 'Helena Matos', phone: '(11) 98888-7777', status: 'Ativo', vip_level: 'Ouro', total_spent: 3500, orders_count: 12, last_purchase_at: new Date(Date.now() - 29.4 * 24 * 60 * 60 * 1000).toISOString() }, // 98%
+        { name: 'Carlos Pereira', phone: '(11) 97777-6666', status: 'Ativo', vip_level: 'Prata', total_spent: 1200, orders_count: 5, last_purchase_at: new Date(Date.now() - 27 * 24 * 60 * 60 * 1000).toISOString() }, // 90%
+        { name: 'Carlos Pereira', phone: '(11) 97777-6666', status: 'Ativo', vip_level: 'Prata', total_spent: 1200, orders_count: 5, last_purchase_at: new Date(Date.now() - 26.1 * 24 * 60 * 60 * 1000).toISOString() }, // 87%
+        { name: 'Fernando Costa', phone: '(11) 96666-5555', status: 'Ativo', vip_level: 'Bronze', total_spent: 800, orders_count: 3, last_purchase_at: new Date(Date.now() - 23.4 * 24 * 60 * 60 * 1000).toISOString() }, // 78%
+        { name: 'Fernando Costa', phone: '(11) 96666-5555', status: 'Ativo', vip_level: 'Bronze', total_spent: 800, orders_count: 3, last_purchase_at: new Date(Date.now() - 22.5 * 24 * 60 * 60 * 1000).toISOString() }, // 75%
+        { name: 'Roberto Silva', phone: '(11) 94444-5555', status: 'Ativo', vip_level: 'Ouro', total_spent: 3200, orders_count: 18, last_purchase_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() }, // Stock Zerado (100%)
+        { name: 'Lucia Santos', phone: '(11) 93333-4444', status: 'Ativo', vip_level: 'Prata', total_spent: 1100, orders_count: 8, last_purchase_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() }, // Stock Zerado (100%)
+        { name: 'Zaqueu Fernandes', phone: '(11) 98765-4321', status: 'Ativo', vip_level: 'Ouro', total_spent: 2500, orders_count: 15, last_purchase_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() }, // 50%
         { name: 'Marta Rocha', phone: '(11) 92265-4327', status: 'Recuperável', vip_level: 'Ouro', total_spent: 1200, orders_count: 12, last_purchase_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString() },
         { name: 'Paulo Amaral', phone: '(11) 91165-4328', status: 'Inativo', vip_level: 'Prata', total_spent: 210, orders_count: 2, last_purchase_at: new Date(Date.now() - 62 * 24 * 60 * 60 * 1000).toISOString() },
         { name: 'Júlia Ferreira', phone: '(11) 90065-4329', status: 'Inativo', vip_level: 'Ouro', total_spent: 890, orders_count: 6, last_purchase_at: new Date(Date.now() - 68 * 24 * 60 * 60 * 1000).toISOString() },

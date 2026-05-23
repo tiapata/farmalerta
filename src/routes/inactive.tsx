@@ -84,7 +84,7 @@ function InactiveCustomers() {
   const handleWhatsApp = async (phone: string, name: string, customerId: string) => {
     try {
       const pharmacyName = pharmacy?.name || "Nossa Farmácia";
-      const messageContent = `Olá ${name}, sentimos sua falta na ${pharmacyName}! Temos uma oferta especial para você hoje.`;
+      const messageContent = `Olá ${name}, sentimos sua falta aqui na ${pharmacyName}! Temos uma oferta especial preparada exclusivamente para você voltar a nos visitar. Que tal aproveitar hoje?`;
       
       if (pharmacy?.id) {
         await supabase.from("messages").insert([{
