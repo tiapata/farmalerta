@@ -27,10 +27,12 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { useCustomers, Customer } from "@/hooks/use-customers";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/customers")({
   component: Customers,
@@ -39,6 +41,9 @@ export const Route = createFileRoute("/customers")({
 function Customers() {
   const { customers, loading, addCustomer, seedData } = useCustomers();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [newCustomer, setNewCustomer] = useState({
     name: "",
     phone: "",
@@ -63,6 +68,21 @@ function Customers() {
       default: return <Badge variant="outline" className="rounded-lg text-[10px]">{status}</Badge>;
     }
   };
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter(customer => {
+      const matchesSearch = 
+        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (customer.phone && customer.phone.includes(searchTerm)) ||
+        (customer.cpf && customer.cpf.includes(searchTerm)) ||
+        (customer.email && customer.email.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesStatus = statusFilter === "all" || customer.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [customers, searchTerm, statusFilter]);
+
 
   return (
     <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
@@ -143,16 +163,48 @@ function Customers() {
         </div>
       </header>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center bg-card p-4 rounded-2xl shadow-sm border-none">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Buscar por nome, CPF, telefone ou medicamento..." className="pl-10 bg-muted/30 border-none rounded-xl focus-visible:ring-primary" />
+      <div className="flex flex-col gap-4 bg-card p-4 rounded-2xl shadow-sm border-none">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input 
+              placeholder="Buscar por nome, CPF, telefone..." 
+              className="pl-10 bg-muted/30 border-none rounded-xl focus-visible:ring-primary"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className={cn("rounded-xl border-none bg-muted/30 gap-2", showAdvancedFilters && "bg-primary/10 text-primary")}
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <Filter className="h-4 w-4" /> Filtros Avançados
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-none bg-muted/30 gap-2">
-            <Filter className="h-4 w-4" /> Filtros Avançados
-          </Button>
-        </div>
+
+        {showAdvancedFilters && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase text-muted-foreground ml-1">Filtrar por Status</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="bg-muted/30 border-none rounded-xl h-10">
+                  <SelectValue placeholder="Selecione o status" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">Todos os Status</SelectItem>
+                  <SelectItem value="Ativo">Ativo</SelectItem>
+                  <SelectItem value="Inativo">Inativo</SelectItem>
+                  <SelectItem value="Recuperável">Recuperável</SelectItem>
+                  <SelectItem value="VIP">VIP</SelectItem>
+                  <SelectItem value="Em risco">Em Risco</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -215,14 +267,14 @@ function Customers() {
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                     </td>
                   </tr>
-                ) : customers.length === 0 ? (
+                ) : filteredCustomers.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                      Nenhum cliente encontrado.
+                      Nenhum cliente encontrado com os filtros aplicados.
                     </td>
                   </tr>
                 ) : (
-                  customers.map((customer) => {
+                  filteredCustomers.map((customer) => {
                     const initials = customer.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                     return (
                       <tr key={customer.id} className="group hover:bg-muted/30 transition-colors">
