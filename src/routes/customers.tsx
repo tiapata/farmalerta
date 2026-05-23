@@ -82,7 +82,7 @@ function Customers() {
             onClick={() => seedData()} 
             className="text-[10px] text-muted-foreground hover:text-primary"
           >
-            Gerar Dados de Teste
+            Popular Banco de Dados (Teste)
           </Button>
           <Button variant="outline" className="rounded-xl border-none bg-card shadow-sm gap-2">
             <Download className="h-4 w-4" /> Exportar CSV
