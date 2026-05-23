@@ -96,35 +96,6 @@ function Repurchases() {
     }
   };
 
-  // Filtrar clientes que têm histórico e simular previsões
-  const predictions = customers
-    .filter(c => (c.orders_count || 0) > 0)
-    .slice(0, 10)
-    .map((c, i) => {
-      const daysSinceLast = c.last_purchase_at 
-        ? Math.ceil(Math.abs(new Date().getTime() - new Date(c.last_purchase_at).getTime()) / (1000 * 60 * 60 * 24))
-        : 30;
-      
-      const cycle = 30; // Assumindo ciclo de 30 dias para simplificar
-      const daysLeft = Math.max(0, cycle - (daysSinceLast % cycle));
-      const progress = Math.min(100, Math.round(((cycle - daysLeft) / cycle) * 100));
-      const priority = daysLeft <= 2 ? "Alta" : daysLeft <= 7 ? "Média" : "Baixa";
-      
-      const nextDate = new Date();
-      nextDate.setDate(nextDate.getDate() + daysLeft);
-
-      return {
-        id: c.id,
-        customer: c.name,
-        medication: i % 2 === 0 ? "Losartana 50mg" : "Metformina 850mg",
-        daysLeft,
-        progress,
-        date: nextDate.toLocaleDateString(),
-        priority,
-        initials: c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-      };
-    })
-    .sort((a, b) => a.daysLeft - b.daysLeft);
 
   return (
     <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
