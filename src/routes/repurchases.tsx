@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCustomers } from "@/hooks/use-customers";
+import { usePharmacy } from "@/hooks/use-pharmacy";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { 
   Calendar, 
   Search, 
@@ -27,6 +30,7 @@ export const Route = createFileRoute("/repurchases")({
 
 function Repurchases() {
   const { customers, loading } = useCustomers();
+  const { pharmacy } = usePharmacy();
 
   // Filtrar clientes que têm histórico e simular previsões
   const predictions = customers
@@ -38,7 +42,13 @@ function Repurchases() {
         : 30;
       
       const cycle = 30; // Assumindo ciclo de 30 dias para simplificar
-      const daysLeft = Math.max(0, cycle - (daysSinceLast % cycle));
+      let daysLeft = Math.max(0, cycle - (daysSinceLast % cycle));
+      
+      // Ajuste para quando o estoque está exatamente no fim (múltiplo do ciclo)
+      if (daysSinceLast >= cycle && daysSinceLast % cycle === 0) {
+        daysLeft = 0;
+      }
+      
       const progress = Math.min(100, Math.round(((cycle - daysLeft) / cycle) * 100));
       const priority = daysLeft <= 2 ? "Alta" : daysLeft <= 7 ? "Média" : "Baixa";
       
@@ -48,6 +58,7 @@ function Repurchases() {
       return {
         id: c.id,
         customer: c.name,
+        phone: c.phone,
         medication: i % 2 === 0 ? "Losartana 50mg" : "Metformina 850mg",
         daysLeft,
         progress,
@@ -57,6 +68,34 @@ function Repurchases() {
       };
     })
     .sort((a, b) => a.daysLeft - b.daysLeft);
+
+  const handleNotify = async (prediction: any) => {
+    try {
+      const pharmacyName = pharmacy?.name || "Nossa Farmácia";
+      const messageText = prediction.daysLeft === 0
+        ? `Olá ${prediction.customer}, notamos que seu medicamento ${prediction.medication} acabou hoje. Gostaria de solicitar a recompra na ${pharmacyName}?`
+        : `Olá ${prediction.customer}, seu medicamento ${prediction.medication} está chegando ao fim (restam ${prediction.daysLeft} dias). Gostaria de garantir sua próxima caixa na ${pharmacyName}?`;
+
+      if (pharmacy?.id) {
+        await supabase.from("messages").insert([{
+          pharmacy_id: pharmacy.id,
+          customer_id: prediction.id,
+          content: messageText,
+          status: 'Enviado',
+          sent_at: new Date().toISOString()
+        }]);
+      }
+
+      const encodedMessage = encodeURIComponent(messageText);
+      const phone = prediction.phone.replace(/\D/g, '');
+      window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+      toast.success("Mensagem de lembrete preparada!");
+    } catch (error) {
+      console.error("Erro ao notificar:", error);
+      toast.error("Erro ao processar notificação");
+    }
+  };
+
 
   return (
     <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
@@ -158,7 +197,12 @@ function Repurchases() {
                   </div>
 
                   <div className="flex items-center gap-2 md:ml-4">
-                    <Button variant="outline" size="sm" className="rounded-xl gap-2 h-10 px-4 border-primary/20 text-primary hover:bg-primary/5">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-xl gap-2 h-10 px-4 border-primary/20 text-primary hover:bg-primary/5"
+                      onClick={() => handleNotify(p)}
+                    >
                       <MessageCircle className="h-4 w-4" /> Notificar
                     </Button>
                     <Button size="sm" className="rounded-xl gap-2 h-10 px-4 shadow-md shadow-primary/10">
