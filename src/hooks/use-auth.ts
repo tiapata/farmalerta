@@ -22,7 +22,24 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Usuário";
+  const [profileName, setProfileName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.full_name) {
+            setProfileName(data.full_name);
+          }
+        });
+    }
+  }, [user]);
+
+  const userName = profileName || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Usuário";
 
   return { user, userName, loading };
 }
