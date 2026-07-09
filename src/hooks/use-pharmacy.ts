@@ -80,9 +80,23 @@ export function usePharmacy() {
     }
   };
 
+  const createPharmacy = async (name: string) => {
+    try {
+      const { data, error } = await supabase.rpc("create_my_pharmacy", { pharmacy_name: name });
+      if (error) throw error;
+      setPharmacy(data as any);
+      toast.success("Farmácia criada com sucesso!");
+      return data;
+    } catch (error: any) {
+      console.error("Error creating pharmacy:", error);
+      toast.error("Erro ao criar farmácia: " + (error.message || "tente novamente"));
+      throw error;
+    }
+  };
+
   useEffect(() => {
     fetchPharmacy();
   }, []);
 
-  return { pharmacy, loading, updatePharmacy, refresh: fetchPharmacy };
+  return { pharmacy, loading, updatePharmacy, createPharmacy, refresh: fetchPharmacy };
 }

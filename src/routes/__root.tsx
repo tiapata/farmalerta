@@ -11,8 +11,10 @@ import {
 } from "@tanstack/react-router";
 import { Sidebar } from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { PharmacyOnboarding } from "@/components/PharmacyOnboarding";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { usePharmacy } from "@/hooks/use-pharmacy";
 import { Session } from "@supabase/supabase-js";
 import { Loader2 } from "lucide-react";
 
@@ -41,6 +43,7 @@ function RootComponent() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const { pharmacy, loading: loadingPharmacy, createPharmacy } = usePharmacy();
 
   useEffect(() => {
     // Check initial session
@@ -83,6 +86,27 @@ function RootComponent() {
       <>
         <HeadContent />
         <Outlet />
+        <Toaster />
+        <Scripts />
+      </>
+    );
+  }
+
+  if (loadingPharmacy) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Usuário autenticado mas ainda sem farmácia (perfil recém-criado pelo
+  // trigger handle_new_user, que deliberadamente não atribui nenhuma).
+  if (!pharmacy) {
+    return (
+      <>
+        <HeadContent />
+        <PharmacyOnboarding onCreate={createPharmacy} />
         <Toaster />
         <Scripts />
       </>

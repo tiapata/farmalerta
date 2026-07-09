@@ -633,6 +633,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_my_pharmacy: {
+        Args: { pharmacy_name: string }
+        Returns: Database["public"]["Tables"]["pharmacies"]["Row"]
+      }
       current_pharmacy_id: {
         Args: Record<PropertyKey, never>
         Returns: string
