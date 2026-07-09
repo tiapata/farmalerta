@@ -87,15 +87,17 @@ function InactiveCustomers() {
       const messageContent = `Olá ${name}, sentimos sua falta aqui na ${pharmacyName}! Temos uma oferta especial preparada exclusivamente para você voltar a nos visitar. Que tal aproveitar hoje?`;
       
       if (pharmacy?.id) {
-        await supabase.from("messages").insert([{
+        await supabase.from("notifications").insert([{
           pharmacy_id: pharmacy.id,
           customer_id: customerId,
-          content: messageContent,
-          status: 'Enviado',
+          channel: 'whatsapp',
+          type: 'reminder',
+          payload: { message: messageContent },
+          status: 'sent',
           sent_at: new Date().toISOString()
         }]);
       }
-      
+
       const message = encodeURIComponent(messageContent);
       window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
       toast.success("Mensagem registrada e abrindo WhatsApp...");
@@ -107,14 +109,15 @@ function InactiveCustomers() {
 
   const handleReactivate = async (name: string, customerId: string) => {
     try {
-      const { data: pharmacy } = await supabase.from("pharmacies").select("id").limit(1).maybeSingle();
-      if (pharmacy) {
+      if (pharmacy?.id) {
         // Simular a criação de uma campanha ou mensagem de reativação
-        await supabase.from("messages").insert([{
+        await supabase.from("notifications").insert([{
           pharmacy_id: pharmacy.id,
           customer_id: customerId,
-          content: `Estratégia de reativação iniciada para ${name}`,
-          status: 'Pendente'
+          channel: 'whatsapp',
+          type: 'reminder',
+          payload: { message: `Estratégia de reativação iniciada para ${name}` },
+          status: 'pending'
         }]);
       }
       toast.success(`Iniciando processo de reativação para ${name}. Uma oferta personalizada foi preparada!`);

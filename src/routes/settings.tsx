@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode, Loader2, DatabaseZap } from "lucide-react";
+import { Building2, Globe, Bell, Users, Save, Plus, Webhook, Database, FileCode, Loader2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { usePharmacy } from "@/hooks/use-pharmacy";
 import { useProfiles } from "@/hooks/use-profiles";
-import { useCustomers } from "@/hooks/use-customers";
-import { useState, useEffect } from "react";
+import { useIntegrations } from "@/hooks/use-integrations";
+import { uploadErpExport } from "@/lib/middleware-client";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,8 +25,32 @@ export const Route = createFileRoute("/settings")({
 function SettingsPage() {
   const { pharmacy, loading: loadingPharmacy, updatePharmacy } = usePharmacy();
   const { profiles, loading: loadingProfiles, refresh: refreshProfiles } = useProfiles();
-  const { seedData, loading: seeding } = useCustomers();
-  
+  const { integrationConfig, syncRuns, loading: loadingIntegrations, refresh: refreshIntegrations } = useIntegrations();
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setImporting(true);
+    try {
+      const summary = await uploadErpExport(file);
+      if (summary.recordsFailed > 0) {
+        toast.warning(`Importação concluída com ${summary.recordsFailed} erro(s) de ${summary.recordsProcessed + summary.recordsFailed} vendas.`);
+      } else {
+        toast.success(`${summary.recordsProcessed} venda(s) importada(s) com sucesso!`);
+      }
+      await refreshIntegrations();
+    } catch (error: any) {
+      console.error("Erro ao importar arquivo:", error);
+      toast.error("Erro ao importar arquivo: " + (error.message || "tente novamente"));
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     cnpj: "",
@@ -97,7 +122,7 @@ function SettingsPage() {
       </div>
 
       <Tabs defaultValue="perfil" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
+        <TabsList className="grid w-full grid-cols-4 lg:w-[620px]">
           <TabsTrigger value="perfil" className="gap-2">
             <Building2 className="w-4 h-4" />
             <span className="hidden sm:inline">Perfil</span>
@@ -113,10 +138,6 @@ function SettingsPage() {
           <TabsTrigger value="usuarios" className="gap-2">
             <Users className="w-4 h-4" />
             <span className="hidden sm:inline">Usuários</span>
-          </TabsTrigger>
-          <TabsTrigger value="database" className="gap-2">
-            <DatabaseZap className="w-4 h-4" />
-            <span className="hidden sm:inline">Dados</span>
           </TabsTrigger>
         </TabsList>
 
@@ -188,52 +209,129 @@ function SettingsPage() {
         <TabsContent value="integracoes" className="space-y-4 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Integrações do Sistema</CardTitle>
+              <CardTitle>Middleware Universal</CardTitle>
               <CardDescription>
-                Conecte sua farmácia a serviços externos e automatize processos.
+                Conecte o ERP da sua farmácia. A cadeia de prioridade tenta cada método na ordem abaixo — hoje só o Tier 2 (Exportação Automática) está implementado.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="border-dashed">
+                <Card className="border-primary/30">
                   <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <Webhook className="w-5 h-5 text-primary" />
-                      <CardTitle className="text-lg">Webhooks / API</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <UploadCloud className="w-5 h-5 text-primary" />
+                        <CardTitle className="text-lg">Exportação Automática (ERP)</CardTitle>
+                      </div>
+                      {integrationConfig && (
+                        <Badge variant={integrationConfig.status === "active" ? "default" : integrationConfig.status === "error" ? "destructive" : "secondary"}>
+                          {integrationConfig.status === "active" ? "Ativo" : integrationConfig.status === "error" ? "Erro" : "Não configurado"}
+                        </Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm text-muted-foreground">
-                    Configure endpoints para receber atualizações de pedidos em tempo real.
-                    <Button variant="outline" size="sm" className="w-full mt-2">Configurar API</Button>
+                    Envie um arquivo CSV ou XLSX exportado do seu ERP para sincronizar clientes, produtos e vendas.
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".csv,.xlsx"
+                      className="hidden"
+                      onChange={handleImportFile}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2"
+                      disabled={importing}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {importing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <UploadCloud className="w-4 h-4 mr-2" />}
+                      {importing ? "Importando..." : "Selecionar arquivo (CSV/XLSX)"}
+                    </Button>
+                    {integrationConfig?.last_error && (
+                      <p className="text-xs text-destructive">{integrationConfig.last_error}</p>
+                    )}
                   </CardContent>
                 </Card>
 
-                <Card className="border-dashed">
+                <Card className="border-dashed opacity-70">
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
-                      <Database className="w-5 h-5 text-green-600" />
-                      <CardTitle className="text-lg">n8n Automation</CardTitle>
+                      <Webhook className="w-5 h-5 text-muted-foreground" />
+                      <CardTitle className="text-lg">API Oficial</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm text-muted-foreground">
-                    Conecte fluxos de trabalho do n8n para automação de marketing e estoque.
-                    <Button variant="outline" size="sm" className="w-full mt-2">Conectar n8n</Button>
+                    Tier 1 da cadeia de prioridade — em breve, para ERPs com API própria.
+                    <Button variant="outline" size="sm" className="w-full mt-2" disabled>Em breve</Button>
                   </CardContent>
                 </Card>
 
-                <Card className="border-dashed">
+                <Card className="border-dashed opacity-70">
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
-                      <FileCode className="w-5 h-5 text-blue-600" />
-                      <CardTitle className="text-lg">Importar XML ERP</CardTitle>
+                      <Database className="w-5 h-5 text-muted-foreground" />
+                      <CardTitle className="text-lg">Banco de Dados (leitura)</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm text-muted-foreground">
-                    Importe arquivos XML das notas fiscais e estoque diretamente do seu ERP.
-                    <Button variant="outline" size="sm" className="w-full mt-2 text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-100">Selecionar arquivo XML</Button>
+                    Tier 3 da cadeia de prioridade — conexão somente leitura ao banco do ERP.
+                    <Button variant="outline" size="sm" className="w-full mt-2" disabled>Em breve</Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-dashed opacity-70">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <FileCode className="w-5 h-5 text-muted-foreground" />
+                      <CardTitle className="text-lg">XML da NFC-e</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm text-muted-foreground">
+                    Tier 4 da cadeia de prioridade — leitura dos XMLs fiscais já emitidos.
+                    <Button variant="outline" size="sm" className="w-full mt-2" disabled>Em breve</Button>
                   </CardContent>
                 </Card>
               </div>
+
+              {integrationConfig && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold">Histórico de sincronizações</h3>
+                  {loadingIntegrations ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                  ) : syncRuns.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Nenhuma importação ainda.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Arquivo</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Processados</TableHead>
+                          <TableHead>Falhas</TableHead>
+                          <TableHead>Data</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {syncRuns.map((run) => (
+                          <TableRow key={run.id}>
+                            <TableCell className="font-medium">{run.source_file_name || "—"}</TableCell>
+                            <TableCell>
+                              <Badge variant={run.status === "success" ? "default" : run.status === "failed" ? "destructive" : "secondary"}>
+                                {run.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{run.records_processed}</TableCell>
+                            <TableCell>{run.records_failed}</TableCell>
+                            <TableCell>{new Date(run.started_at).toLocaleString('pt-BR')}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -380,35 +478,6 @@ function SettingsPage() {
                   )}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="database" className="space-y-4 mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Dados de Teste</CardTitle>
-              <CardDescription>
-                Popule seu banco de dados com informações fictícias para testar as funcionalidades do sistema.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-col gap-4 p-4 border rounded-xl bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <DatabaseZap className="w-8 h-8 text-primary" />
-                  <div>
-                    <h3 className="font-bold">Popular Banco de Dados</h3>
-                    <p className="text-sm text-muted-foreground">Isso irá cadastrar clientes, vendas e eventos de exemplo.</p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={seedData} 
-                  disabled={seeding}
-                  className="w-full sm:w-auto"
-                >
-                  {seeding ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <DatabaseZap className="w-4 h-4 mr-2" />}
-                  Gerar Dados de Teste agora
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>

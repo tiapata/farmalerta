@@ -88,11 +88,13 @@ function Repurchases() {
         : `Olá ${prediction.customer}, seu medicamento ${prediction.medication} está chegando ao fim (restam ${prediction.daysLeft} dias). Gostaria de garantir sua próxima caixa na ${pharmacyName}?`;
 
       if (pharmacy?.id) {
-        await supabase.from("messages").insert([{
+        await supabase.from("notifications").insert([{
           pharmacy_id: pharmacy.id,
           customer_id: prediction.id,
-          content: messageText,
-          status: 'Enviado',
+          channel: 'whatsapp',
+          type: 'reminder',
+          payload: { message: messageText },
+          status: 'sent',
           sent_at: new Date().toISOString()
         }]);
       }

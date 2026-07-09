@@ -39,7 +39,7 @@ export const Route = createFileRoute("/customers")({
 });
 
 function Customers() {
-  const { customers, loading, addCustomer, seedData } = useCustomers();
+  const { customers, loading, addCustomer } = useCustomers();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -96,14 +96,6 @@ function Customers() {
           <p className="text-muted-foreground text-lg">Administre e analise o comportamento dos seus <span className="text-foreground font-semibold">1,240 clientes</span>.</p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => seedData()} 
-            className="text-[10px] text-muted-foreground hover:text-primary"
-          >
-            Popular Banco de Dados (Teste)
-          </Button>
           <Button variant="outline" className="rounded-xl border-none bg-card shadow-sm gap-2">
             <Download className="h-4 w-4" /> Exportar CSV
           </Button>

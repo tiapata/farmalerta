@@ -19,36 +19,37 @@ export function usePharmacy() {
   const fetchPharmacy = async () => {
     try {
       setLoading(true);
-      // Tenta buscar a primeira farmácia. 
-      // Em um cenário real, cada usuário pertenceria a uma farmácia específica.
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setPharmacy(null);
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("pharmacy_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (!profile?.pharmacy_id) {
+        // Usuário autenticado, mas ainda não associado a nenhuma farmácia.
+        setPharmacy(null);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("pharmacies")
         .select("*")
-        .limit(1)
+        .eq("id", profile.pharmacy_id)
         .maybeSingle();
 
       if (error) throw error;
-
-      if (!data) {
-        // Se não existir, tenta criar uma inicial
-        const { data: newData, error: createError } = await supabase
-          .from("pharmacies")
-          .insert([{ name: "Farmácia Central" }])
-          .select()
-          .single();
-
-        if (createError) {
-          console.error("Erro ao criar farmácia inicial:", createError);
-          // Se falhar (ex: RLS), não tratamos aqui para não travar o app
-        } else {
-          setPharmacy(newData as any);
-        }
-      } else {
-        setPharmacy(data as any);
-      }
+      setPharmacy(data as any);
     } catch (error: any) {
       console.error("Error fetching pharmacy:", error);
-      // Removendo toast de erro aqui para não irritar o usuário se for apenas falta de permissão RLS inicial
     } finally {
       setLoading(false);
     }

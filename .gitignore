@@ -16,9 +16,11 @@ dist-ssr
 .nitro
 *.local
 
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
+# Local data exports / backups (may contain real customer PII once live)
+backup/
+
+# Supabase CLI local link cache
+supabase/.temp/
 
 # Editor directories and files
 .vscode/*
