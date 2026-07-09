@@ -14,60 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
-      campaigns: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          pharmacy_id: string
-          scheduled_at: string | null
-          status: string | null
-          target_vip_levels: string[] | null
-          title: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          pharmacy_id: string
-          scheduled_at?: string | null
-          status?: string | null
-          target_vip_levels?: string[] | null
-          title: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          pharmacy_id?: string
-          scheduled_at?: string | null
-          status?: string | null
-          target_vip_levels?: string[] | null
-          title?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "campaigns_pharmacy_id_fkey"
-            columns: ["pharmacy_id"]
-            isOneToOne: false
-            referencedRelation: "pharmacies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       customers: {
         Row: {
           birth_date: string | null
           cpf: string | null
           created_at: string
           email: string | null
-          gender: string | null
           id: string
           last_purchase_at: string | null
           name: string
@@ -84,7 +36,6 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           email?: string | null
-          gender?: string | null
           id?: string
           last_purchase_at?: string | null
           name: string
@@ -101,7 +52,6 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           email?: string | null
-          gender?: string | null
           id?: string
           last_purchase_at?: string | null
           name?: string
@@ -123,57 +73,75 @@ export type Database = {
           },
         ]
       }
-      messages: {
+      integrations: {
         Row: {
-          campaign_id: string | null
-          content: string
+          config: Json | null
           created_at: string
-          customer_id: string | null
-          error_message: string | null
           id: string
           pharmacy_id: string
-          sent_at: string | null
           status: string | null
+          type: string
+          updated_at: string
         }
         Insert: {
-          campaign_id?: string | null
-          content: string
+          config?: Json | null
           created_at?: string
-          customer_id?: string | null
-          error_message?: string | null
           id?: string
           pharmacy_id: string
-          sent_at?: string | null
           status?: string | null
+          type: string
+          updated_at?: string
         }
         Update: {
-          campaign_id?: string | null
-          content?: string
+          config?: Json | null
           created_at?: string
-          customer_id?: string | null
-          error_message?: string | null
           id?: string
           pharmacy_id?: string
-          sent_at?: string | null
           status?: string | null
+          type?: string
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "messages_campaign_id_fkey"
-            columns: ["campaign_id"]
+            foreignKeyName: "integrations_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
             isOneToOne: false
-            referencedRelation: "campaigns"
+            referencedRelation: "pharmacies"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      notifications: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          pharmacy_id: string
+          title: string
+          type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          pharmacy_id: string
+          title: string
+          type: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          pharmacy_id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "messages_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_pharmacy_id_fkey"
+            foreignKeyName: "notifications_pharmacy_id_fkey"
             columns: ["pharmacy_id"]
             isOneToOne: false
             referencedRelation: "pharmacies"
@@ -183,25 +151,40 @@ export type Database = {
       }
       pharmacies: {
         Row: {
+          business_phone: string | null
           cnpj: string | null
           created_at: string
+          email: string | null
           id: string
           name: string
+          phone: string | null
           updated_at: string
+          whatsapp: string | null
+          whatsapp_business: string | null
         }
         Insert: {
+          business_phone?: string | null
           cnpj?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name: string
+          phone?: string | null
           updated_at?: string
+          whatsapp?: string | null
+          whatsapp_business?: string | null
         }
         Update: {
+          business_phone?: string | null
           cnpj?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name?: string
+          phone?: string | null
           updated_at?: string
+          whatsapp?: string | null
+          whatsapp_business?: string | null
         }
         Relationships: []
       }
