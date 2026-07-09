@@ -1,7 +1,8 @@
 // The npm-registry xlsx@0.18.5 build has known unpatched ReDoS/prototype-pollution
-// advisories; SheetJS ships fixes only from their own CDN, and Deno can import
-// arbitrary HTTPS module URLs directly, so we pull the patched build from there.
-import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs";
+// advisories; SheetJS ships fixes only from their own CDN (cdn.sheetjs.com), which
+// Supabase's Edge Function bundler refuses to fetch from at deploy time ("Cannot
+// import from cdn.sheetjs.com"). Vendored locally instead — see ../../_shared/vendor/README.md.
+import * as XLSX from "../../_shared/vendor/xlsx-0.20.3.mjs";
 
 export function parseXlsx(bytes: Uint8Array): Record<string, string>[] {
   const workbook = XLSX.read(bytes, { type: "array" });
