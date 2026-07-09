@@ -13,6 +13,7 @@ import { usePharmacy } from "@/hooks/use-pharmacy";
 import { useProfiles } from "@/hooks/use-profiles";
 import { useIntegrations } from "@/hooks/use-integrations";
 import { uploadErpExport } from "@/lib/middleware-client";
+import { WhatsappConnectionCard } from "@/components/WhatsappConnectionCard";
 import { lazy, Suspense } from "react";
 
 // xlsx (~400kB) só é necessário quando o usuário efetivamente abre o mapeamento
@@ -351,6 +352,8 @@ function SettingsPage() {
               )}
             </CardContent>
           </Card>
+
+          <WhatsappConnectionCard />
         </TabsContent>
 
         <TabsContent value="notificacoes" className="space-y-4 mt-6">

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  Settings, 
-  LogOut, 
-  MessageSquare, 
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  Settings,
+  LogOut,
+  MessageSquare,
+  MessageCircle,
+  Kanban,
   Clock,
   ChevronLeft,
   ChevronRight
@@ -17,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: MessageCircle, label: "Inbox", href: "/inbox" },
+  { icon: Kanban, label: "Pipeline", href: "/pipeline" },
   { icon: Users, label: "Clientes", href: "/customers" },
   { icon: Calendar, label: "Recompras", href: "/repurchases" },
   { icon: Clock, label: "Inativos", href: "/inactive" },

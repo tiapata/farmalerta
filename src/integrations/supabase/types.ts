@@ -140,6 +140,83 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          assigned_to: string | null
+          contact_name: string | null
+          contact_phone: string
+          created_at: string
+          customer_id: string | null
+          id: string
+          last_message_at: string | null
+          last_message_preview: string | null
+          pharmacy_id: string
+          status: string
+          unread_count: number
+          updated_at: string
+          whatsapp_instance_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          contact_name?: string | null
+          contact_phone: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          pharmacy_id: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+          whatsapp_instance_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          contact_name?: string | null
+          contact_phone?: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          pharmacy_id?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+          whatsapp_instance_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_whatsapp_instance_id_fkey"
+            columns: ["whatsapp_instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           birth_date: string | null
@@ -157,6 +234,7 @@ export type Database = {
           orders_count: number
           pharmacy_id: string
           phone: string
+          phone_digits: string | null
           preferred_channel: string
           status: string
           total_spent: number
@@ -273,6 +351,76 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          body: string | null
+          content_type: string
+          conversation_id: string
+          created_at: string
+          direction: string
+          error_message: string | null
+          evolution_message_id: string | null
+          id: string
+          media_url: string | null
+          pharmacy_id: string
+          raw_payload: Json | null
+          sent_by: string | null
+          status: string
+        }
+        Insert: {
+          body?: string | null
+          content_type?: string
+          conversation_id: string
+          created_at?: string
+          direction: string
+          error_message?: string | null
+          evolution_message_id?: string | null
+          id?: string
+          media_url?: string | null
+          pharmacy_id: string
+          raw_payload?: Json | null
+          sent_by?: string | null
+          status?: string
+        }
+        Update: {
+          body?: string | null
+          content_type?: string
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          error_message?: string | null
+          evolution_message_id?: string | null
+          id?: string
+          media_url?: string | null
+          pharmacy_id?: string
+          raw_payload?: Json | null
+          sent_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           automation_rule_id: string | null
@@ -343,6 +491,167 @@ export type Database = {
           },
           {
             foreignKeyName: "notifications_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_cards: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          customer_id: string | null
+          id: string
+          pharmacy_id: string
+          pipeline_id: string
+          position: number
+          stage_id: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          pharmacy_id: string
+          pipeline_id: string
+          position?: number
+          stage_id: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          pharmacy_id?: string
+          pipeline_id?: string
+          position?: number
+          stage_id?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_cards_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipeline_cards_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipeline_cards_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipeline_cards_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipeline_cards_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_stages: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          pharmacy_id: string
+          pipeline_id: string
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          pharmacy_id: string
+          pipeline_id: string
+          position: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          pharmacy_id?: string
+          pipeline_id?: string
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stages_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipeline_stages_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipelines: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean
+          name: string
+          pharmacy_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          pharmacy_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          pharmacy_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipelines_pharmacy_id_fkey"
             columns: ["pharmacy_id"]
             isOneToOne: false
             referencedRelation: "pharmacies"
@@ -571,6 +880,56 @@ export type Database = {
           },
         ]
       }
+      whatsapp_instances: {
+        Row: {
+          created_at: string
+          evolution_instance_name: string
+          id: string
+          last_connected_at: string | null
+          last_error: string | null
+          pharmacy_id: string
+          phone_number: string | null
+          qr_code_data: string | null
+          status: Database["public"]["Enums"]["whatsapp_instance_status"]
+          updated_at: string
+          webhook_token: string
+        }
+        Insert: {
+          created_at?: string
+          evolution_instance_name: string
+          id?: string
+          last_connected_at?: string | null
+          last_error?: string | null
+          pharmacy_id: string
+          phone_number?: string | null
+          qr_code_data?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_instance_status"]
+          updated_at?: string
+          webhook_token: string
+        }
+        Update: {
+          created_at?: string
+          evolution_instance_name?: string
+          id?: string
+          last_connected_at?: string | null
+          last_error?: string | null
+          pharmacy_id?: string
+          phone_number?: string | null
+          qr_code_data?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_instance_status"]
+          updated_at?: string
+          webhook_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_instances_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sync_runs: {
         Row: {
           created_at: string
@@ -645,8 +1004,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      increment_conversation_unread: {
+        Args: { p_conversation_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
+      conversation_status: "open" | "pending" | "resolved" | "closed"
       driver_type:
         | "official_api"
         | "automated_export"
@@ -654,10 +1018,28 @@ export type Database = {
         | "nfce_xml"
         | "rpa_ui"
       integration_status: "not_configured" | "active" | "paused" | "error"
+      message_content_type:
+        | "text"
+        | "image"
+        | "audio"
+        | "video"
+        | "document"
+        | "location"
+        | "other"
+      message_direction: "inbound" | "outbound"
+      message_status: "pending" | "sent" | "delivered" | "read" | "failed"
       notification_channel: "whatsapp" | "push"
       notification_status: "pending" | "sent" | "delivered" | "read" | "failed"
       notification_type: "cashback" | "promo" | "reminder"
+      pipeline_type: "attendance" | "sales" | "custom"
       sync_run_status: "running" | "success" | "partial" | "failed"
+      whatsapp_instance_status:
+        | "not_configured"
+        | "connecting"
+        | "qr_pending"
+        | "connected"
+        | "disconnected"
+        | "error"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -785,6 +1167,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      conversation_status: ["open", "pending", "resolved", "closed"],
       driver_type: [
         "official_api",
         "automated_export",
@@ -793,10 +1176,30 @@ export const Constants = {
         "rpa_ui",
       ],
       integration_status: ["not_configured", "active", "paused", "error"],
+      message_content_type: [
+        "text",
+        "image",
+        "audio",
+        "video",
+        "document",
+        "location",
+        "other",
+      ],
+      message_direction: ["inbound", "outbound"],
+      message_status: ["pending", "sent", "delivered", "read", "failed"],
       notification_channel: ["whatsapp", "push"],
       notification_status: ["pending", "sent", "delivered", "read", "failed"],
       notification_type: ["cashback", "promo", "reminder"],
+      pipeline_type: ["attendance", "sales", "custom"],
       sync_run_status: ["running", "success", "partial", "failed"],
+      whatsapp_instance_status: [
+        "not_configured",
+        "connecting",
+        "qr_pending",
+        "connected",
+        "disconnected",
+        "error",
+      ],
     },
   },
 } as const

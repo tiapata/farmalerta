@@ -1,1 +1,6 @@
 project_id = "hqoybksxdudrpeuryoln"
+
+[functions.whatsapp-webhook]
+# Chamado pela própria Evolution API, não por um usuário autenticado do
+# Supabase — a autenticação é feita dentro da função via token na URL.
+verify_jwt = false

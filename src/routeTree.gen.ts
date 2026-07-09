@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RepurchasesRouteImport } from './routes/repurchases'
+import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as InactiveRouteImport } from './routes/inactive'
 import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as CampaignsRouteImport } from './routes/campaigns'
@@ -28,9 +30,19 @@ const RepurchasesRoute = RepurchasesRouteImport.update({
   path: '/repurchases',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PipelineRoute = PipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InactiveRoute = InactiveRouteImport.update({
@@ -65,7 +77,9 @@ export interface FileRoutesByFullPath {
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
+  '/inbox': typeof InboxRoute
   '/login': typeof LoginRoute
+  '/pipeline': typeof PipelineRoute
   '/repurchases': typeof RepurchasesRoute
   '/settings': typeof SettingsRoute
 }
@@ -75,7 +89,9 @@ export interface FileRoutesByTo {
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
+  '/inbox': typeof InboxRoute
   '/login': typeof LoginRoute
+  '/pipeline': typeof PipelineRoute
   '/repurchases': typeof RepurchasesRoute
   '/settings': typeof SettingsRoute
 }
@@ -86,7 +102,9 @@ export interface FileRoutesById {
   '/campaigns': typeof CampaignsRoute
   '/customers': typeof CustomersRoute
   '/inactive': typeof InactiveRoute
+  '/inbox': typeof InboxRoute
   '/login': typeof LoginRoute
+  '/pipeline': typeof PipelineRoute
   '/repurchases': typeof RepurchasesRoute
   '/settings': typeof SettingsRoute
 }
@@ -98,7 +116,9 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/customers'
     | '/inactive'
+    | '/inbox'
     | '/login'
+    | '/pipeline'
     | '/repurchases'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +128,9 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/customers'
     | '/inactive'
+    | '/inbox'
     | '/login'
+    | '/pipeline'
     | '/repurchases'
     | '/settings'
   id:
@@ -118,7 +140,9 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/customers'
     | '/inactive'
+    | '/inbox'
     | '/login'
+    | '/pipeline'
     | '/repurchases'
     | '/settings'
   fileRoutesById: FileRoutesById
@@ -129,7 +153,9 @@ export interface RootRouteChildren {
   CampaignsRoute: typeof CampaignsRoute
   CustomersRoute: typeof CustomersRoute
   InactiveRoute: typeof InactiveRoute
+  InboxRoute: typeof InboxRoute
   LoginRoute: typeof LoginRoute
+  PipelineRoute: typeof PipelineRoute
   RepurchasesRoute: typeof RepurchasesRoute
   SettingsRoute: typeof SettingsRoute
 }
@@ -150,11 +176,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RepurchasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pipeline': {
+      id: '/pipeline'
+      path: '/pipeline'
+      fullPath: '/pipeline'
+      preLoaderRoute: typeof PipelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inactive': {
@@ -201,7 +241,9 @@ const rootRouteChildren: RootRouteChildren = {
   CampaignsRoute: CampaignsRoute,
   CustomersRoute: CustomersRoute,
   InactiveRoute: InactiveRoute,
+  InboxRoute: InboxRoute,
   LoginRoute: LoginRoute,
+  PipelineRoute: PipelineRoute,
   RepurchasesRoute: RepurchasesRoute,
   SettingsRoute: SettingsRoute,
 }

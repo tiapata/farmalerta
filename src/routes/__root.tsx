@@ -1,4 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Instância única fora do componente — recriar a cada render descartaria o
+// cache. `QueryClientProvider` estava importado mas nunca de fato montado
+// (confirmado antes de usar hooks React Query pela primeira vez no Inbox).
+const queryClient = new QueryClient();
 import {
   Outlet,
   Link,
@@ -83,12 +88,12 @@ function RootComponent() {
   // If on login page, just show the outlet
   if (["/login", "/auth-confirmation"].includes(location.pathname)) {
     return (
-      <>
+      <QueryClientProvider client={queryClient}>
         <HeadContent />
         <Outlet />
         <Toaster />
         <Scripts />
-      </>
+      </QueryClientProvider>
     );
   }
 
@@ -104,17 +109,17 @@ function RootComponent() {
   // trigger handle_new_user, que deliberadamente não atribui nenhuma).
   if (!pharmacy) {
     return (
-      <>
+      <QueryClientProvider client={queryClient}>
         <HeadContent />
         <PharmacyOnboarding onCreate={createPharmacy} />
         <Toaster />
         <Scripts />
-      </>
+      </QueryClientProvider>
     );
   }
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <HeadContent />
       <div className="flex min-h-screen">
         <Sidebar />
@@ -124,6 +129,6 @@ function RootComponent() {
       </div>
       <Toaster />
       <Scripts />
-    </>
+    </QueryClientProvider>
   );
 }
