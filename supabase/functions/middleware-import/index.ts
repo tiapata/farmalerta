@@ -63,6 +63,16 @@ Deno.serve(async (req) => {
     return json({ error: "Nenhum arquivo enviado" }, 400);
   }
 
+  let requestedMapping: Record<string, string> | undefined;
+  const columnMappingField = formData.get("column_mapping");
+  if (typeof columnMappingField === "string") {
+    try {
+      requestedMapping = JSON.parse(columnMappingField);
+    } catch {
+      return json({ error: "Mapeamento de colunas inválido" }, 400);
+    }
+  }
+
   // Garante uma integration_configs para este driver, criando com o
   // mapeamento padrão se a farmácia ainda não configurou nada.
   const { data: existingConfig } = await service
@@ -92,9 +102,17 @@ Deno.serve(async (req) => {
   }
 
   const columnMapping =
-    (integrationConfig.config as Record<string, unknown> | null)?.column_mapping as
+    requestedMapping ??
+    ((integrationConfig.config as Record<string, unknown> | null)?.column_mapping as
       | Record<string, string>
-      | undefined ?? DEFAULT_COLUMN_MAPPING;
+      | undefined) ??
+    DEFAULT_COLUMN_MAPPING;
+
+  // Se o usuário mandou um mapeamento novo (primeira importação ou remapeamento),
+  // guarda pra reaplicar automaticamente nas próximas — sem precisar remapear de novo.
+  const configPatch = requestedMapping
+    ? { config: { ...((integrationConfig.config as Record<string, unknown> | null) ?? {}), column_mapping: requestedMapping } }
+    : {};
 
   const { data: syncRun, error: syncRunError } = await service
     .from("sync_runs")
@@ -133,6 +151,7 @@ Deno.serve(async (req) => {
         status: "active",
         last_sync_at: new Date().toISOString(),
         last_error: summary.errors[0] ?? null,
+        ...configPatch,
       })
       .eq("id", integrationConfig.id);
 
@@ -151,7 +170,7 @@ Deno.serve(async (req) => {
 
     await service
       .from("integration_configs")
-      .update({ status: "error", last_error: message })
+      .update({ status: "error", last_error: message, ...configPatch })
       .eq("id", integrationConfig.id);
 
     console.error(error);

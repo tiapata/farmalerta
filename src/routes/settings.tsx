@@ -13,6 +13,13 @@ import { usePharmacy } from "@/hooks/use-pharmacy";
 import { useProfiles } from "@/hooks/use-profiles";
 import { useIntegrations } from "@/hooks/use-integrations";
 import { uploadErpExport } from "@/lib/middleware-client";
+import { lazy, Suspense } from "react";
+
+// xlsx (~400kB) só é necessário quando o usuário efetivamente abre o mapeamento
+// de colunas, então carrega sob demanda em vez de inchar o bundle principal.
+const ColumnMappingDialog = lazy(() =>
+  import("@/components/ColumnMappingDialog").then((m) => ({ default: m.ColumnMappingDialog })),
+);
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,22 +34,32 @@ function SettingsPage() {
   const { profiles, loading: loadingProfiles, refresh: refreshProfiles } = useProfiles();
   const { integrationConfig, syncRuns, loading: loadingIntegrations, refresh: refreshIntegrations } = useIntegrations();
   const [importing, setImporting] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [mappingDialogOpen, setMappingDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+    setPendingFile(file);
+    setMappingDialogOpen(true);
+  };
+
+  const handleConfirmImport = async (columnMapping: Record<string, string>) => {
+    if (!pendingFile) return;
 
     setImporting(true);
     try {
-      const summary = await uploadErpExport(file);
+      const summary = await uploadErpExport(pendingFile, columnMapping);
       if (summary.recordsFailed > 0) {
         toast.warning(`Importação concluída com ${summary.recordsFailed} erro(s) de ${summary.recordsProcessed + summary.recordsFailed} vendas.`);
       } else {
         toast.success(`${summary.recordsProcessed} venda(s) importada(s) com sucesso!`);
       }
       await refreshIntegrations();
+      setMappingDialogOpen(false);
+      setPendingFile(null);
     } catch (error: any) {
       console.error("Erro ao importar arquivo:", error);
       toast.error("Erro ao importar arquivo: " + (error.message || "tente novamente"));
@@ -237,7 +254,7 @@ function SettingsPage() {
                       type="file"
                       accept=".csv,.xlsx"
                       className="hidden"
-                      onChange={handleImportFile}
+                      onChange={handleFileSelected}
                     />
                     <Button
                       variant="outline"
@@ -482,6 +499,21 @@ function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {pendingFile && (
+        <Suspense fallback={null}>
+          <ColumnMappingDialog
+            file={pendingFile}
+            open={mappingDialogOpen}
+            onOpenChange={(open) => {
+              setMappingDialogOpen(open);
+              if (!open) setPendingFile(null);
+            }}
+            onConfirm={handleConfirmImport}
+            importing={importing}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
